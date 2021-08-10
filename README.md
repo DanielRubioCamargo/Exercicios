@@ -1,2 +1,2 @@
 # Exercícios
-Exercicios para treinar programação.
+Exercícios para treinar programação.
