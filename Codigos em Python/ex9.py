@@ -1,0 +1,6 @@
+numero = int(input("Insira um numero : "))
+print("1X{}={}".format(numero,1*numero))
+print("2X{}={}".format(numero,2*numero))
+print("3X{}={}".format(numero,3*numero))
+print("4X{}={}".format(numero,4*numero))
+print("5X{}={}".format(numero,5*numero))
