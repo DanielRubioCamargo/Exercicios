@@ -1,0 +1,12 @@
+n1 = 0
+n2 = 1
+n3 = 1
+contador = 0
+numero = int(input("Até aonde vai o fibonnacci : "))
+print("{} {} {} ".format(n1,n2,n3),end = "")
+while contador <= ((numero-6)/3):
+    n1 = n2+n3
+    n2 = n1+n3
+    n3 = n1+n2
+    contador += 1
+    print("{} {} {} ".format(n1,n2,n3),end = "")
