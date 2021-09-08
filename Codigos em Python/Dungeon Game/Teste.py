@@ -5,14 +5,15 @@ cont = 0
 print("\nOlá aventureiro! :D\n")
 print("--------------------------\n\033[1;33mSala atual (inicial) : {}\033[m\n--------------------------".format(numeroSala))
 while numeroSala != 9 and cont < 7:
-    escolhaCaminho = int(input("Qual caminho você seguirá (se escolher algum diferente de 1 ou 2 será adicionado 1)?\n[1] \033[1;31mVermelho\033[m\n[2] \033[1;37mPreto\033[m\nEscolha : "))
-    if(numeroSala == 8 and escolhaCaminho == 2):
+    escolhaCaminho = int(input("Qual caminho você seguirá ?\n[1] \033[1;31mVermelho\033[m\n[2] \033[1;37mPreto\033[m\nEscolha : "))
+    if(numeroSala == 8 and escolhaCaminho == 2 and numeroSala != 6):
         print("\n\033[1;35m* Você caiu na dungeon dos controladores do espaço-tempo! Teleportando para uma sala aleatória ... *\033[m\n")
         numeroSala = randint(1,5)
-    elif(numeroSala == 6 or escolhaCaminho == 2):
-        numeroSala += 2
+    elif(escolhaCaminho == 1 or escolhaCaminho == 2 and numeroSala != 6):
+        numeroSala+=escolhaCaminho
     else:
-        numeroSala += 1
+        numeroSala += 2
+        print("\n\033[1;34m* Não fez diferença o que você digitou! Da sala 6 foi enviado automaticamente para a sala 8! *\033[m\n")
     print("----------------------\n\033[1;33mSua sala atual é : {}\033[m\n----------------------\n".format(numeroSala))
     cont = cont + 1
 if(numeroSala == 9):
