@@ -1,14 +1,18 @@
-import Pacote.libmetodos
+import Pacote.libfuncoes
+import Pacote.libarquivo
 from time import sleep
 
+arq = "teste.txt"
 opcoes = ["Ver pessoas cadastradas","Cadastrar nova pessoa","Sair do sistema"]
+if Pacote.libarquivo.verificar_Arquivo(arq) == False:
+    arquivo = Pacote.libarquivo.criar_Arquivo(arq)
 
 while True:
-    menu = Pacote.libmetodos.menu(opcoes)
-    escolha = Pacote.libmetodos.leiaInt("Insira sua escolha : ")
+    menu = Pacote.libfuncoes.menu(opcoes)
+    escolha = Pacote.libfuncoes.leiaInt("Insira sua escolha : ")
     if escolha == 1:
         #Logica para mostrar pessoas cadastradas
-        pass
+        Pacote.libarquivo.mostrar_Arquivo(arq)
     elif escolha == 2:
         #Logica para cadastrar nova pessoa
         pass
