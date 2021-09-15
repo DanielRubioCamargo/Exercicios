@@ -25,5 +25,21 @@ def mostrar_Arquivo(nomeArquivo,msg = "Arquivo"):
         print("Erro ao abrir o arquivo!")
     else:
         Pacote.libfuncoes.cabecalho(msg)
-        print(arq.read())
+        for linha in arq:
+            dado = linha.split(";")
+            dado[1] = dado[1].replace("\n","")
+            print("\033[1;32m{} | {} anos\033[m".format(dado[0],dado[1]))
+
+def cadastrar_Nova_Pessoa(nomeArquivo,nome = "desconhecido",idade = 0):
+    try:
+        arq = open(nomeArquivo,"at")
+    except:
+        print("Erro ao abrir o arquivo!")
+    else:
+        try:
+            arq.write("Nome : {};Idade : {}\n".format(nome,idade))
+        except:
+            print("Erro ao cadastrar o/a {}".format(nome))
+        else:
+            print("{} cadastrado(a) com sucesso!".format(nome))
 
