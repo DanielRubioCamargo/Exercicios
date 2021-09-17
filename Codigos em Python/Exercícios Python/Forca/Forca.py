@@ -17,11 +17,15 @@ while erros < 12:
         print("Insira uma letra e não uma palavra!")
     else:
         for i,c in enumerate(listaLetras):
-            if c == tentativa:
-                listaCodificada[i] = tentativa
-                digitados.append(tentativa)
+            if tentativa in listaLetras:
+                if c == tentativa:
+                    listaCodificada[i] = tentativa
+                    digitados.append(tentativa)
             elif tentativa not in listaLetras:
+                print("\033[1;31mErrou!\033[m")
                 erros += 1
+                digitados.append(tentativa)
+                break
     if "*" not in listaCodificada:
         print("\033[1;32mVocê venceu!!!\033[m")
         break
