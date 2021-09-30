@@ -1,13 +1,19 @@
-def merge_the_tools(string, k):
-    mylist = []
-    m = 0
-    for x in range(len(string)//k):
-        mylist.append(string[m:m+k])
-        m += k
-    
-    for x in mylist:
-        print(''.join(list(dict.fromkeys(x))))
-
 if __name__ == '__main__':
-    string, k = input(), int(input())
-    merge_the_tools(string, k)
+    n = int(input())
+    scores = list()
+    highest = 0
+    for i in range(n):
+        score = int(input())
+        scores.append(score)
+        if score > highest:
+            highest = score
+    for i,c in enumerate(scores):
+        if c == highest:
+            scores.pop(i)
+    highest2 = 0
+    for i in scores:
+        if i > highest2 and i != highest:
+            highest2 = i
+    print(highest2)
+    print(scores)
+    
