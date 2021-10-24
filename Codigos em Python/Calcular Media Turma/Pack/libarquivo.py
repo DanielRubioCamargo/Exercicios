@@ -54,4 +54,3 @@ def recarregar_dados_perdidos(nomeArquivo,lista):
         for linha in arq:
             dado = linha.split(";")
             lista.append(float(dado[1]))
-
