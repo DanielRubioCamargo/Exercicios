@@ -1,15 +1,20 @@
-def criar_cabecalho(nome = "Cabeçalho",tamanhoLinha = 60):
-    print("-"*tamanhoLinha)
-    print(nome.center(tamanhoLinha))
-    print("-"*tamanhoLinha)
+def criar_cabecalho(nome = "Cabeçalho",tamanhoLinha = 60,eEspecial = False):
+    if eEspecial == False:
+        print("-"*tamanhoLinha)
+        print(nome.center(tamanhoLinha))
+        print("-"*tamanhoLinha)
+    else:
+        print("-=-"*20)
+        print(nome.center(tamanhoLinha))
+        print("-=-"*20)
 
 
 def criar_menu(lista : list,nome = "Menu",tamanhoLinha = 60):
     print("-"*tamanhoLinha)
-    print(nome.center(tamanhoLinha))
+    print("\033[1;34m{}\033[m".format(nome.center(tamanhoLinha)))
     print("-"*tamanhoLinha)
     for i,c in enumerate(lista):
-        print("{} - {}".format(i+1,c))
+        print("\033[1;33m{}\033[m - {}".format(i+1,c))
     print("-"*tamanhoLinha)
 
 
@@ -18,9 +23,9 @@ def criar_arquivo(nomeArquivo : str):
         arq = open(nomeArquivo,"w")
         arq.close()
     except:
-        print("Erro ao criar arquivo!")
+        print("\033[1;31mErro ao criar arquivo!\033[m")
     else:
-        print("Arquivo criado com sucesso!")
+        print("\033[1;32mArquivo criado com sucesso!\033[m")
 
 
 def adicionar_nova_pessoa(arquivo,nome : str):
@@ -29,9 +34,9 @@ def adicionar_nova_pessoa(arquivo,nome : str):
         arq.write("{}\n".format(nome))
         arq.close()
     except:
-        print("Erro! Não foi possível adicionar o(a) {} na lista!".format(nome.title().strip()))
+        print("\033[1;31mErro! Não foi possível adicionar o(a) {} na lista!\033[m".format(nome.title().strip()))
     else:
-        print("{} adicionado(a) com sucesso!".format(nome.title().strip()))
+        print("\033[1;32m{} adicionado(a) com sucesso!\033[m".format(nome.title().strip()))
 
 
 def exibir_pessoas(arquivo):
@@ -42,7 +47,7 @@ def exibir_pessoas(arquivo):
             print("{} -> {}".format(i+1,c.title().strip()))
         arq.close()
     except:
-        print("Erro ao exibir lista de pessoas!")
+        print("\033[1;31mErro ao exibir lista de pessoas!\033[m")
 
 
 def verificar_arquivo(arquivo) -> bool:
@@ -60,6 +65,6 @@ def limpar_dados(arquivo : str):
         arq = open(arquivo,"w")
         arq.close()
     except:
-        print("Erro ao deletar dados da lista!")
+        print("\033[1;31mErro ao deletar dados da lista!\033[m")
     else:
-        print("Dados da lista deletados com sucesso!")
+        print("\033[1;32mDados da lista deletados com sucesso!\033[m")
