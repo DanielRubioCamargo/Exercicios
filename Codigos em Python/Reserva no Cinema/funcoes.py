@@ -15,10 +15,10 @@ def create_head(title = "head_name",hasDetail = False,lineSize = 60):
 
 def create_menu(optionsList:list, title = "menu_name", lineSize = 60):
     print("-"*lineSize)
-    print(title.center(lineSize))
+    print("\033[1;34m{}\033[m".format(title.center(lineSize)))
     print("-"*lineSize)
     for i,c in enumerate(optionsList):
-        print("{} - {}".format(i+1,c))
+        print("\033[1;36m{}\033[m - \033[1m{}\033[m".format(i+1,c))
     print("-"*lineSize)
 
 
@@ -28,12 +28,16 @@ def book_seats(reservationsList:list, personFullName:str, movieDigit:int, amount
     verMovie = 0
     data = {"name":"","movie":0,"seats":[],"code":0}
     for i in range(amountSeats):
-        number = int(input("Insira o número da {}° cadeira : ".format(i+1)))
-        auxList.append(number)
-        for i,c in enumerate(reservationsList):
-            if c["movie"] == movieDigit and number in c["seats"]:
-                verCont = 1
-                break
+        try:
+            number = int(input("Insira o número da {}° cadeira : ".format(i+1)))
+        except:
+            print("\033[1;31mEsse tipo de dado está incorreto!\033[m")        
+        else:
+            auxList.append(number)
+            for i,c in enumerate(reservationsList):
+                if c["movie"] == movieDigit and number in c["seats"]:
+                    verCont = 1
+                    break
     if verCont == 0:
         while True:
             code = randint(100000,999999)
@@ -48,39 +52,44 @@ def book_seats(reservationsList:list, personFullName:str, movieDigit:int, amount
                 break
         data = {"name":personFullName,"movie":movieDigit,"seats":auxList,"code":code}
         reservationsList.append(data.copy())
-        create_head("Sucesso!",True)
-        print("Reserva criada!")
-        print("Nome : {}".format(data["name"]))
+        create_head("        \033[1;32mSucesso!\033[m")
+        print("\033[1;32mReserva criada!\033[m")
+        print("Nome(responsável) : {}".format(data["name"]))
         print("Filme : {}".format(moviesList[movieDigit-1]))
-        print("Assentos : ",end = "")
+        print("Assento(s) : ",end = "")
         for i,c in enumerate(data["seats"]):
             if i == len(data["seats"])-1:
                 print(c)
             else:
                 print(c,end = " ")
         print("Código de entrada : {}".format(data["code"]))
-        print("-=-"*20)
+        print("-"*60)
         data.clear()
     else:
-        create_head("Erro",True)
-        print("Erro ao realizar cadastro! Este assento já esta ocupado!")
-        print("-=-"*20)
+        create_head("        \033[1;31mErro\033[m")
+        print("\033[1;31mErro ao realizar cadastro! Este assento já esta ocupado!\033[m")
+        print("-"*60)
 
 
 def show_reservations(reservationsList:list,code:int,movieChoice:int,movieList:list):
-    for i in reservationsList:
-        if i["code"] == code:
-            create_head("Dados da reserva",True)
-            print("Nome : {}".format(i["name"]))
+    for i,c in enumerate(reservationsList):
+        if c["code"] == code:
+            create_head("        \033[1;34mDados da reserva\033[m")
+            print("Nome : {}".format(c["name"]))
             print("Filme : {}".format(movieList[movieChoice]))
-            print("Código de entrada : {}".format(i["code"]))
-            print("-=-"*20)
+            print("Código de entrada : {}".format(c["code"]))
+            print("-"*60)
+            break
 
 
 def delete_reservation(reservationsList:list,code:int):
     for i,c in enumerate(reservationsList):
         if c["code"] == code:
-            del c
-            print("Reserva deletada com sucesso!")
-            break
+            try:
+                reservationsList.pop(i)
+            except:
+                print("\033[1;31mErro ao remover reserva da lista!\033[m")
+            else:
+                print("\033[1;32mReserva de numero {} cancelada com sucesso!\033[m".format(code))
+                break
 
