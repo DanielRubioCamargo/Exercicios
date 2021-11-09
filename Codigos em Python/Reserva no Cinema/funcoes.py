@@ -71,15 +71,20 @@ def book_seats(reservationsList:list, personFullName:str, movieDigit:int, amount
         print("-"*60)
 
 
-def show_reservations(reservationsList:list,code:int,movieChoice:int,movieList:list):
+def show_reservation_data(reservationsList:list,code:int,movieChoice:int,movieList:list):
     for i,c in enumerate(reservationsList):
         if c["code"] == code:
             create_head("        \033[1;34mDados da reserva\033[m")
             print("Nome : {}".format(c["name"]))
             print("Filme : {}".format(movieList[movieChoice]))
-            print("Código de entrada : {}".format(c["code"]))
+            print("Assento(s) : ",end = "")
+            for j in c["seats"]:
+                print(j,end = " ")
+            print()
             print("-"*60)
             break
+        elif i == len(reservationsList)-1:
+            print("\033[1;31mNão foi encontrada nenhuma reserva com esse código!\033[m")
 
 
 def delete_reservation(reservationsList:list,code:int):
@@ -92,4 +97,7 @@ def delete_reservation(reservationsList:list,code:int):
             else:
                 print("\033[1;32mReserva de numero {} cancelada com sucesso!\033[m".format(code))
                 break
+        elif i == len(reservationsList)-1:
+            print("\033[1;31mNão foi encontrada nenhuma reserva com esse código!\033[m")
+
 
