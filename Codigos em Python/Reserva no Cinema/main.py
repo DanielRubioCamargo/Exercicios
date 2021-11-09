@@ -8,9 +8,9 @@
 # 7*-KEYS utilizadas no dicionario : 'name', 'movie', 'seats' e 'code'.
 #----------------------------------------------------------------------------------------------------------
 # TO-DO
-# Adicionar uma função na parte de funcionarios para remover um filme do cartaz.
+# Adicionar uma função na parte de funcionários para remover um filme do cartaz.
 # Resolver bugs.
-# -> Resolver o bug do filme sendo mostrado errado na show_reservation_data.
+# -> Resolver o bug do filme sendo mostrado errado na função show_reservation_data.
 #-----------------------------------------------------------------------------------------------------------
 
 from funcoes import *
