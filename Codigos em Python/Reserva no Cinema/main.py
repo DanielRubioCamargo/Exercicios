@@ -6,22 +6,22 @@
 # 5-Opções para mostrar as reservas feitas pelo código adquirido.
 # 6-Colorir terminal para deixar mais agradável.
 # 7*-KEYS utilizadas no dicionario : 'name', 'movie', 'seats' e 'code'.
+# 8-Existe um easter egg, boa sorte em tentar achá-lo!
 #----------------------------------------------------------------------------------------------------------
 # TO-DO
-# Adicionar uma função na parte de funcionários para remover um filme do cartaz.
-# Resolver bugs.
-# -> Resolver o bug do filme sendo mostrado errado na função show_reservation_data.
+# Nada no momento.
 #-----------------------------------------------------------------------------------------------------------
 
 from funcoes import *
 from time import sleep
 
 def main():
+    susCont = 0
     create_head("        \033[1;35mBem vindo ao cinema!\033[m",True)
     moviesList = ["Batman","Velozes e Furiosos","Toy Story 4","Os incríveis","Gente Grande 2"]
-    reservationList = [{"name":"Chico buarque de olinda","movie":1,"seats":[1,2,3],"code":123345}]
+    reservationList = [{"name":"Lucas Gabrielison","movie":2,"seats":[10,11,12],"code":123345}]
     optionList = ["Reserva de assentos","Exibir reserva","Cancelar reserva","Sair do sistema","\033[1;33mSou funcionário\033[m"]
-    employeeOptionsList = ["Adicionar novo filme no cartaz","Ver todos os responsáveis de reservas","Sair para parte de usuários (voltar)"]
+    employeeOptionsList = ["Adicionar novo filme no cartaz","Remover um filme do cartaz","Ver todos os responsáveis de reservas","Sair para parte de usuários (voltar)"]
     password = 6543123
 
     while True:
@@ -45,13 +45,19 @@ def main():
                     amountSeats = int(input("Insira a quantidade de assentos : "))
                     book_seats(reservationList,fullName,movieDigit,amountSeats,moviesList)
             elif option == 2:
+                movieChoice = 0
                 showCode = int(input("Insira o código de entrada para verificar seus dados : "))
-                show_reservation_data(reservationList,showCode,movieDigit,moviesList)
+                for i,c in enumerate(reservationList):
+                    if c["code"] == showCode:
+                        movieChoice = c["movie"]
+                show_reservation_data(reservationList,showCode,movieChoice-1,moviesList)
             elif option == 3:
                 secureAnswer = str(input("\033[1;33mVocê tem certeza de que quer deletar sua reserva? [S/N] : \033[m")).strip().upper()
-                if secureAnswer == "S" or secureAnswer == "SIM" or secureAnswer == "SS":
+                if secureAnswer == "S" or secureAnswer == "SIM" or secureAnswer == "SS" or secureAnswer == "SE" or secureAnswer == "YES" or secureAnswer == "YEAH" or secureAnswer == "YEA":
                     deletionCode = int(input("Insira o seu código de entrada : "))
                     delete_reservation(reservationList,deletionCode)
+                else:
+                    print("\033[1;33mRetornando ao menu...\033[m")
             elif option == 4:
                 print("\033[1;33mSaindo do sistema...\033[m")
                 break
@@ -69,18 +75,42 @@ def main():
                             else:
                                 print("\033[1;31mErro! Filme já existe no cartaz!\033[m")
                         elif employeeOption == 2:
+                            print("-"*60)
+                            for i,c in enumerate(moviesList):
+                                print("\033[1;36m{}\033[m - \033[1m{}\033[m".format(i+1,c))
+                            print("-"*60)
+                            try:
+                                removalOption = int(input("Insira o numero do filme a ser removido : "))
+                            except:
+                                print("\033[1;31mErro! Valor incorreto e/ou desconhecido!\033[m")
+                            else:
+                                if removalOption > 0 and removalOption <= len(moviesList):
+                                    moviesList.pop(removalOption-1)
+                                    print("\033[1;32mSucesso! Filme retirado do cartaz!\033[m")
+                                else:
+                                    print("\033[1;31mErro! Opção inválida!\033[m")
+                        elif employeeOption == 3:
                             print()
-                            print("\033[1mResponsáveis registrados({}) : \033[m".format(len(reservationList)))
+                            print("\033[1mResponsáveis registrados ({}) : \033[m".format(len(reservationList)))
                             for i,c in enumerate(reservationList):
                                 print("{} - {}".format(i+1,c["name"]))
                             print()
-                        elif employeeOption == 3:
+                        elif employeeOption == 4:
                             print("\033[1;33mSaindo da parte de funcionários...\033[m")
                             break     
                         else:
                             print("\033[1;31mOpção inválida!\033[m")               
                 else:
                     print("\033[1;31mSenha inválida!\033[m")
+            elif option == 666:
+                create_head("SUS")
+                print("ඞ "*30)
+                print("-"*60)
+                if susCont == 0:
+                    print("     \033[1;35mBom trabalho! Tu acabou de achar o easter egg!\033[m".center(60))
+                    print("-"*60)
+                susCont += 1
+                sleep(2)
             else:
                 print("\033[1;31mOpção inválida!\033[m")
             sleep(0.75)

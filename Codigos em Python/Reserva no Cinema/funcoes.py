@@ -75,7 +75,7 @@ def show_reservation_data(reservationsList:list,code:int,movieChoice:int,movieLi
     for i,c in enumerate(reservationsList):
         if c["code"] == code:
             create_head("        \033[1;34mDados da reserva\033[m")
-            print("Nome : {}".format(c["name"]))
+            print("Nome(responsável) : {}".format(c["name"]))
             print("Filme : {}".format(movieList[movieChoice]))
             print("Assento(s) : ",end = "")
             for j in c["seats"]:
