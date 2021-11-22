@@ -1,20 +1,4 @@
-if __name__ == '__main__':
-    data = list()
-    sClass = list()
-    n = int(input())
-    for c in range(n):
-        name = input()
-        score = float(input())
-        data.append(name)
-        data.append(score)
-        sClass.append(data[:])
-        data.clear()
-    lowerGrade = sClass[0][1]
-    for c in sClass:
-        if c[1] < lowerGrade:
-            lowerGrade = c[1]
-    for i,c in enumerate(sClass):
-        if c[1] == lowerGrade:
-            
-   
+text = "Utilizando o Visual Studio Code (vscode) para comparar a execução do algoritmo Quicksort tanto com uma função iterativa quanto com uma função recursiva eu acabei chegando nos seguintes resultados: Com um valor para a constante relativamente baixo, não foi possível comparar, já que ambos apontavam 0 segundo de execução. Quando aumentei a constante para um valor relativamente médio, ao ponto de conseguir pelo menos chegar a um valor mais específico, observei que na maioria dos testes a função recursiva se saia melhor (mais rápida) que a função iterativa (aproximadamente 75 as vezes). Ao chegar no ponto de inserir valores extremamente altos (quase no limite) foi mostrado que a função iterativa tinha executado o código mais rápido que a função recursiva, pelo menos na maioria das tentativas. Conclusão final: Quando se tem valores mais baixos, a função recursiva tem mais chance de executar o programa mais rapidamente (não tem tanta diferença), já ao aumentarmos o valor, a função iterativa sai na frente na maioria das vezes (quase todas), e isso se explica pela alta quantidade de pilhas a serem carregadas na memória pela função recursiva, o que atrasa um pouco a execução da aplicação."
 
+textList = text.split(" ")
+print(len(textList))
