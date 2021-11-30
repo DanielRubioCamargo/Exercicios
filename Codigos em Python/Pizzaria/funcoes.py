@@ -76,11 +76,31 @@ def show_data(lst:list,code:int):
             print("Não foi encontrado nenhum pedido com o código {}!".format(code))
 
 
-def draw_graph(dataFrame,amountSold):
-    plt.figure(figsize=(8,5))
-    plt.bar(dataFrame["Products"],dataFrame["Amount"],color = "red")
-    plt.title("Comparação de vendas (Total vendido : {})".format(amountSold))
-    plt.xlabel = "Produtos"
-    plt.ylabel = "Total vendido"
+def draw_graph(dataFrame,xA,yA,x,y,customTitle):
+    plt.figure(figsize=(12,5))
+    plt.bar(dataFrame[xA],dataFrame[yA],color = "red")
+    plt.title(customTitle)
+    plt.xlabel = x
+    plt.ylabel = y
     plt.grid()
     plt.show()
+
+
+def choice_make(menuDictionary : dict,ordersDictionary : dict,userName,mKey : str,sKey : str, choice,price : float, userPayValue : float,code : int,bankAmount, dataBank):
+    print("-"*60)
+    if choice >= 0 and choice <= len(menuDictionary[mKey][sKey]):
+        chosenProductP1 = choose_product(menuDictionary[mKey][sKey],choice)
+        if is_payment_valid(price,userPayValue):
+            change = make_change(price,userPayValue)
+            print("Sucesso! Seu pagamento foi efetuado!\nTotal do troco : R${:.2f}".format(change))
+            code = create_random_number(ordersDictionary["CODIGO"])
+            print("Sucesso! Seu código de pedido foi gerado. Código : {}".format(code))
+            ordersDictionary["NOME"].append(userName)
+            ordersDictionary["PEDIDO"].append(chosenProductP1)
+            ordersDictionary["CODIGO"].append(code)
+            bankAmount += price
+            create_id(dataBank,chosenProductP1,userName,change,code)
+        else:
+            print("Pagamento insuficiente!")
+    else:
+        print("Opção inválida!")
