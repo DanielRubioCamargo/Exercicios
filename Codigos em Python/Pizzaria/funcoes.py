@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 
 def create_head(title = "título",lineSize = 60):
     print("-"*lineSize)
-    print(title.center(lineSize))
+    print("\033[1;35m{}\033[m".format(title.center(lineSize)))
     print("-"*lineSize)
 
 
 def create_menu(lst : list, title = "menu",lineSize = 60):
     print("-"*lineSize)
-    print(title.center(lineSize))
+    print("\033[1;34m{}\033[m".format(title.center(lineSize)))
     print("-"*lineSize)
     for i,c in enumerate(lst):
-        print("{} - {}".format(i+1,c))
+        print("\033[1;33m{}\033[m - {}".format(i+1,c))
     print("-"*lineSize)
 
 
@@ -21,7 +21,7 @@ def show_menu(prodDict : dict,mainKey : str,subKey : str,description : str):
     create_head("Cardápio")
     create_head("{}".format(description.title()))
     for i,c in enumerate(prodDict[mainKey][subKey]):
-        print("{} -> {}".format(i+1,c))
+        print("\033[1;33m{}\033[m -> {}".format(i+1,c))
     
 
 def choose_product(productList : list,chosenOption : int):
@@ -73,7 +73,7 @@ def show_data(lst:list,code:int):
             print("-"*60)
             break
         elif i == len(lst) - 1:
-            print("Não foi encontrado nenhum pedido com o código {}!".format(code))
+            print("\033[1;31mNão foi encontrado nenhum pedido com o código {}!\033[m".format(code))
 
 
 def draw_graph(dataFrame,xA,yA,x,y,customTitle):
@@ -86,21 +86,17 @@ def draw_graph(dataFrame,xA,yA,x,y,customTitle):
     plt.show()
 
 
-def choice_make(menuDictionary : dict,ordersDictionary : dict,userName,mKey : str,sKey : str, choice,price : float, userPayValue : float,code : int,bankAmount, dataBank):
+def choice_make(menuDictionary : dict,ordersDictionary : dict,userName,mKey : str,sKey : str, choice,price : float, userPayValue : float,code : int, dataBank):
     print("-"*60)
     if choice >= 0 and choice <= len(menuDictionary[mKey][sKey]):
-        chosenProductP1 = choose_product(menuDictionary[mKey][sKey],choice)
-        if is_payment_valid(price,userPayValue):
-            change = make_change(price,userPayValue)
-            print("Sucesso! Seu pagamento foi efetuado!\nTotal do troco : R${:.2f}".format(change))
-            code = create_random_number(ordersDictionary["CODIGO"])
-            print("Sucesso! Seu código de pedido foi gerado. Código : {}".format(code))
-            ordersDictionary["NOME"].append(userName)
-            ordersDictionary["PEDIDO"].append(chosenProductP1)
-            ordersDictionary["CODIGO"].append(code)
-            bankAmount += price
-            create_id(dataBank,chosenProductP1,userName,change,code)
-        else:
-            print("Pagamento insuficiente!")
+        chosenProductP1 = choose_product(menuDictionary[mKey][sKey],choice) 
+        change = make_change(price,userPayValue)
+        print("\033[1;32mSucesso! Seu pagamento foi efetuado!\nTotal do troco : R${:.2f}\033[m".format(change))
+        code = create_random_number(ordersDictionary["CODIGO"])
+        print("\033[1;32mSucesso! Seu código de pedido foi gerado. Código : {}\033[m".format(code))
+        ordersDictionary["NOME"].append(userName)
+        ordersDictionary["PEDIDO"].append(chosenProductP1)
+        ordersDictionary["CODIGO"].append(code)
+        create_id(dataBank,chosenProductP1,userName,change,code)
     else:
-        print("Opção inválida!")
+        print("\033[1;31mOpção inválida!\033[m")
