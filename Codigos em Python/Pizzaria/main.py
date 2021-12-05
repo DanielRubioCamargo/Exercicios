@@ -31,11 +31,19 @@ def main():
     dataBank = list()
 
     bankAmount = 0.0
+    donationBank = 0.0
+
     ordersAmount = [0,0,0,0]
     ordersAmountSP = {"PIZZAS SALGADAS" : menuDictionary["PIZZA"]["SALGADA"],"QUANTIDADE" : [0,0,0,0,0]}
     ordersAmountDP = {"PIZZAS DOCES" : menuDictionary["PIZZA"]["DOCE"],"QUANTIDADE" : [0,0,0,0]}
     ordersAmountSoda = {"REFRIGERANTES" : menuDictionary["BEBIDA"]["REFRIGERANTE"],"QUANTIDADE" : [0,0,0,0,0]}
     ordersAmountBeer = {"CERVEJAS" : menuDictionary["BEBIDA"]["CERVEJA"],"QUANTIDADE" : [0,0,0,0]}
+
+    ratingGood = 0
+    ratingMedium = 0
+    ratingBad = 0
+
+    feedbackList = list()
 
     generalData = {"Products":["PIZZAS SALGADAS","PIZZAS DOCES","REFRIGERANTES","CERVEJAS"],"Amount":ordersAmount}
 
@@ -142,7 +150,7 @@ def main():
             elif option == 3:
                 amountToDonate = float(input("Insira a quantidade para doar : "))
                 if amountToDonate > 0:
-                    bankAmount += amountToDonate
+                    donationBank += amountToDonate
                     print("\033[1;32mMuito obrigado por doar R${} para a pizzaria!\033[m".format(amountToDonate))
                 else:
                     print("\033[1;31mPara de brincadeira ae! >:(\033[m")
@@ -151,7 +159,27 @@ def main():
                 break
             else:
                 print("\033[1;31mOpção inválida!\033[m")
-
+        print("-"*60)
+        print("1 - Bom\n2 - Médio\n3 - Ruim")
+        print("-"*60)
+        try:
+            rate = int(input("Qual seu nível de satisfação? : "))
+        except:
+            print("\033[1;31mErro de valor!\033[m")
+        else:
+            if rate == 1:
+                ratingGood += 1
+            elif rate == 2:
+                ratingMedium += 1
+            elif rate == 3:
+                ratingBad += 1
+            else:
+                print("\033[1;31mInválido!\033[m")
+            print("-"*60)
+            wantFeedback = str(input("Quer deixar sua avaliação? [S/N] : ")).upper().strip()
+            if wantFeedback == "S" or wantFeedback == "SS" or wantFeedback == "SIM":
+                give_feedback(feedbackList)
+            print("-"*60)
     amountSoldMain = 0 
 
     for c in ordersAmount:
@@ -160,7 +188,6 @@ def main():
     resultList = ["Ver dados gerais","Pizzas salgadas","Pizzas doces","Refrigerantes","Cervejas","Sair"]
     while True:
         create_menu(resultList,"Resultados")
-        print("\033[1;31mErro de valor!\033[m")
         try:
             resultOption = int(input(("Insira sua opção para ver os resultados : ")))
         except:
@@ -187,12 +214,21 @@ def main():
             else:
                 print("\033[1;31mOpção inválida!\033[m")
 
-    profit = bankAmount*0.75
+    profit = (bankAmount*0.75) + donationBank
 
     print("-"*60)
     print("\033[1mLucro obtido com as vendas : R${:.2f}\033[m".format(profit))
     print("-"*60)
-    
+
+    print("-"*60)
+    print("\033[1mQuantidade de satisfações :\033[m\n")
+    print("Bom -> {}\nMédio -> {}\nRuim -> {}".format(ratingGood,ratingMedium,ratingBad))
+    print("-"*60)
+
+    wantToSeeFeedbacks = str(input("Deseja ver os feedbacks? [S/N] : ")).upper().strip()
+    if wantToSeeFeedbacks == "S" or wantToSeeFeedbacks == "SS" or wantToSeeFeedbacks == "SIM":
+        create_menu(feedbackList,"Feedbacks")
+
     print("-=-"*20)
     print("\033[1;35mFim do programa!\033[m".center(60))
     print("-=-"*20)

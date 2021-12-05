@@ -100,3 +100,11 @@ def choice_make(menuDictionary : dict,ordersDictionary : dict,userName,mKey : st
         create_id(dataBank,chosenProductP1,userName,change,code)
     else:
         print("\033[1;31mOpção inválida!\033[m")
+
+
+def give_feedback(fbList : list):
+    feedback = str(input("Insira seu feedback/opinião : "))
+    print("-"*60)
+    print("\033[1;32mMuito obrigado! Seu feedback foi enviado!\033[m")
+    fbList.append(feedback)
+    
