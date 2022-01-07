@@ -26,4 +26,5 @@ while True:
     plt.bar(xValues,yValues)
     plt.title(title)
     plt.show()
+
     
