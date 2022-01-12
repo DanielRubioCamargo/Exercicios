@@ -12,6 +12,11 @@ yRed = heigth/2
 xBlue = 300
 yBlue = 200
 
+pg.mixer.music.set_volume(0.45)
+backgroundSong = pg.mixer.music.load("Codigos em Python\\Games\\Teste\\Chaves   Tema de Abertura Original Televisa Completo.mp3")
+pg.mixer.music.play(-1)
+collisionSound = pg.mixer.Sound("Codigos em Python\\Games\\Teste\\y2meta.com - cavalo (128 kbps).mp3")
+
 points = 0
 font = pg.font.SysFont("arial",40,True,True)
 screen = pg.display.set_mode((width,heigth))
@@ -65,6 +70,7 @@ while True:
         xBlue = randint(0,590)
         yBlue = randint(0,430)
         points+=1
+        collisionSound.play()
 
     screen.blit(text,(400,50))
 
