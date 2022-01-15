@@ -1,3 +1,4 @@
+from turtle import speed
 import pygame as pg
 from pygame.locals import *
 from sys import exit
@@ -15,8 +16,12 @@ xSnake = width/2
 ySnake = heigth/2
 xApple = 300
 yApple = 200
+snakeSpeed = 5
+xControl = snakeSpeed
+yControl = 0
+snakeLength = 0
 
-pg.mixer.music.set_volume(0.25)
+pg.mixer.music.set_volume(0.0)
 backgroundSong = pg.mixer.music.load("Codigos em Python\\Games\\Teste\\Chaves   Tema de Abertura Original Televisa Completo.mp3")
 pg.mixer.music.play(-1)
 #collisionSound = pg.mixer.Sound("Codigos em Python\\Games\\Teste\\y2meta.com - cavalo (128 kbps).mp3")
@@ -38,17 +43,29 @@ while True:
         if event.type == QUIT:
             pg.quit()
             exit()
-            '''
         if event.type == KEYDOWN:
             if event.key == K_a:
-                x = x - 20
-            if event.key == K_d:
-                x = x + 20
-            if event.key == K_w:
-                y = y - 20
-            if event.key == K_s:
-                y = y + 20
-                '''
+                if xControl != snakeSpeed:
+                    xControl = -snakeSpeed
+                    yControl = 0
+            elif event.key == K_d:
+                if xControl != -snakeSpeed:
+                    xControl = snakeSpeed
+                    yControl = 0
+            elif event.key == K_w:
+                if yControl != snakeSpeed:
+                    yControl = -snakeSpeed
+                    xControl = 0
+            elif event.key == K_s:
+                if yControl != -snakeSpeed:
+                    yControl = snakeSpeed
+                    xControl = 0
+            
+    xSnake = xSnake + xControl
+    ySnake = ySnake + yControl
+
+    if len(snakeList) > snakeLength:
+        snakeList.pop(0)
                
     snake = pg.draw.rect(screen,(0,255,0),(xSnake,ySnake,20,20))
     apple = pg.draw.rect(screen,(255,0,0),(xApple,yApple,20,20))
@@ -60,31 +77,13 @@ while True:
 
     draw_snake(snakeList)
 
-    
-    if pg.key.get_pressed()[K_a]:
-        xSnake = xSnake - 20
-    if pg.key.get_pressed()[K_d]:
-        xSnake = xSnake + 20
-    if pg.key.get_pressed()[K_w]:
-        ySnake = ySnake - 20
-    if pg.key.get_pressed()[K_s]:
-        ySnake = ySnake + 20
-
-    if xSnake > width:
-        xSnake = 0
-    if xSnake < 0:
-        xSnake = width-60
-    if ySnake > heigth:
-        ySnake = 0
-    if ySnake < 0:
-        ySnake = heigth-60
-    
-
     if snake.colliderect(apple):
         xApple = randint(0,590)
         yApple = randint(0,430)
         points+=1
         #collisionSound.play()
+        snakeLength += 1
+        snakeSpeed += 1
 
     screen.blit(text,(400,50))
 
