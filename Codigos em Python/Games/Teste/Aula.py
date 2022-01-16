@@ -64,6 +64,8 @@ while True:
     xSnake = xSnake + xControl
     ySnake = ySnake + yControl
 
+   
+
     if len(snakeList) > snakeLength:
         snakeList.pop(0)
                
@@ -74,6 +76,9 @@ while True:
     headList.append(xSnake)
     headList.append(ySnake)
     snakeList.append(headList)
+
+    if snakeList.count(headList) > 1:
+        break
 
     draw_snake(snakeList)
 
