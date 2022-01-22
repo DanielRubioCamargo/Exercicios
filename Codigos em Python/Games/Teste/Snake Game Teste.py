@@ -34,7 +34,7 @@ snakeY = screenHeigth/2
 snakeWidth = 20
 snakeHeigth = 20
 snakeSpeed = 5
-snakeColor = (0,255,0)
+snakeColor = (randint(0,255),randint(0,255),randint(0,255))
 snakeControlX = 5
 snakeControlY = 0
 snakeLength = 5
@@ -140,7 +140,7 @@ while True:
         snakeLength += 1
         appleX = randint(appleWidth,screenWidth-appleWidth)
         appleY = randint(appleHeigth,screenHeigth-appleHeigth)
-        #snakeSpeed += 0.25
+        snakeSpeed += 0.01
 
     screen.blit(text,(screenWidth-150,30))
     pygame.display.update()
