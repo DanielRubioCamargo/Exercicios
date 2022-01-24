@@ -2,8 +2,77 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from random import randint
+from time import sleep
 
 pygame.init()
+
+def fireworks():
+    initialPosX = randint(0,screenWidth)
+    initialPosY = randint(0,screenHeigth)
+    bombSpeed = 1
+    x1 = initialPosX
+    y1 = initialPosY
+    cx1 = bombSpeed
+    cy1 = -bombSpeed
+    pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x1,y1,5,5))
+    x2 = initialPosX
+    y2 = initialPosY
+    cx2 = -bombSpeed
+    cy2 = -bombSpeed
+    pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x2,y2,5,5))
+    x3 = initialPosX
+    y3 = initialPosY
+    cx3 = -bombSpeed
+    cy3 = bombSpeed
+    pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x3,y3,5,5))
+    x4 = initialPosX
+    y4 = initialPosY
+    cx4 = bombSpeed
+    cy4 = bombSpeed
+    pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x4,y4,5,5))
+    x1 += cx1
+    y1 += cy1
+    x2 += cx2
+    y2 += cy2
+    x3 += cx3
+    y3 += cy3
+    x4 += cx4
+    y4 += cy4
+
+def confetti():
+    for i in range(90):
+        initialPosX = randint(0,screenWidth)
+        initialPosY = randint(0,screenHeigth)
+        bombSpeed = 1
+        x1 = initialPosX
+        y1 = initialPosY
+        cx1 = bombSpeed
+        cy1 = -bombSpeed
+        pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x1,y1,5,5))
+        x2 = initialPosX
+        y2 = initialPosY
+        cx2 = -bombSpeed
+        cy2 = -bombSpeed
+        pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x2,y2,5,5))
+        x3 = initialPosX
+        y3 = initialPosY
+        cx3 = -bombSpeed
+        cy3 = bombSpeed
+        pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x3,y3,5,5))
+        x4 = initialPosX
+        y4 = initialPosY
+        cx4 = bombSpeed
+        cy4 = bombSpeed
+        pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(x4,y4,5,5))
+        x1 += cx1
+        y1 += cy1
+        x2 += cx2
+        y2 += cy2
+        x3 += cx3
+        y3 += cy3
+        x4 += cx4
+        y4 += cy4
+
 
 # Win Message
 winFont = pygame.font.SysFont("Arial",30,True,True)
@@ -27,7 +96,7 @@ BLUE = (0,0,255)
 screenWidth = 640
 screenHeigth = 480
 screen = pygame.display.set_mode((screenWidth,screenHeigth))
-gameTitle = pygame.display.set_caption("Space Invaders")
+gameTitle = pygame.display.set_caption("Jonas Invaders")
 
 # FPS
 fps = 60
@@ -145,6 +214,8 @@ while True:
         screen.blit(winImage,((screenWidth/2)-115,(screenHeigth/2)-130))
         screen.blit(winText,((screenWidth/2)-60,(screenHeigth/2)+65))
         winSong.play()
+        confetti()
+        #fireworks()
         
     player = pygame.draw.rect(screen,playerColor,(playerX,playerY,playerWidth,playerHeigth))
     
