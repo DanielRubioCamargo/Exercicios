@@ -19,7 +19,6 @@ class Frog(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image,(128*3,64*3))
         self.rect = self.image.get_rect()
         self.rect.topleft = 100,255
-        
 
     def animate(self):
         self.isPressed = True
