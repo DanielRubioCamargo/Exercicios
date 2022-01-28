@@ -31,7 +31,7 @@ class Dino(pygame.sprite.Sprite):
         self.currentIndex = 0
         self.image = self.dinoList[self.currentIndex]
         self.rect = self.image.get_rect()
-        self.rect.center = (100,360)
+        self.rect.center = (100,385)
 
     def update(self):
         self.currentIndex += 0.2
@@ -45,12 +45,26 @@ class Clouds(pygame.sprite.Sprite):
         self.image = spriteSheet.subsurface((7*32,0),(32,32))
         self.image = pygame.transform.scale(self.image,(32*3,32*3))
         self.rect = self.image.get_rect()
-        self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH+96,32))
+        self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH + (96*3),32*3))
 
     def update(self):
         if self.rect.x < -40:
-            self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH+200,32))
+            self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH + (96*3),32*3))
         self.rect.x -= 10
+
+class Ground(pygame.sprite.Sprite):
+    def __init__(self,xPos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = spriteSheet.subsurface((32*6,0),(32,32))
+        self.image = pygame.transform.scale(self.image,(32*2,32*2))
+        self.rect = self.image.get_rect()
+        self.rect.y = SCREEN_HEIGTH-96
+        self.rect.x = xPos
+
+    def update(self):
+        self.rect.x -= 10
+        if self.rect.x + 64 < 0:
+            self.rect.x = SCREEN_WIDTH
 
 allSprites = pygame.sprite.Group()
 dino = Dino()
@@ -58,6 +72,9 @@ for i in range(3):
     cloud = Clouds()
     cloud.rect.y = i*60
     allSprites.add(cloud)
+for i in range(20):
+    ground = Ground(i*64)
+    allSprites.add(ground)
 allSprites.add(dino)
 
 frameRate = pygame.time.Clock()
