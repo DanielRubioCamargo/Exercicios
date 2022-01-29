@@ -5,6 +5,9 @@ from sys import exit
 import os
 from random import randrange
 
+pygame.init()
+pygame.mixer.init()
+
 mainFile = os.path.dirname(__file__)
 imageFile = os.path.join(mainFile,"imagens")
 soundFile = os.path.join(mainFile,"sons")
@@ -24,6 +27,8 @@ class Dino(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.dinoList = list()
+        self.jumpSound = pygame.mixer.Sound(os.path.join(soundFile,"jump_sound.wav"))
+        self.jumpSound.set_volume(1)
         for i in range(3):
             self.img = spriteSheet.subsurface((i*32,0),(32,32))
             self.img = pygame.transform.scale(self.img,(32*3,32*3))
@@ -31,9 +36,24 @@ class Dino(pygame.sprite.Sprite):
         self.currentIndex = 0
         self.image = self.dinoList[self.currentIndex]
         self.rect = self.image.get_rect()
-        self.rect.center = (100,385)
+        self.initialYpos = 385
+        self.rect.topleft = (100,self.initialYpos)
+        self.isJumping = False
+
+    def jump(self):
+        self.jumpSound.play()
+        self.isJumping = True
 
     def update(self):
+        if self.isJumping == True:
+            self.rect.y -= 20
+            if self.rect.y <= 100:
+                self.isJumping = False
+        else:
+            if self.rect.y < self.initialYpos-(32*3)/2:
+                self.rect.y += 20
+            else:
+                self.rect.y = self.initialYpos-(32*3)/2
         self.currentIndex += 0.2
         if self.currentIndex > 2:
             self.currentIndex = 0
@@ -80,12 +100,18 @@ allSprites.add(dino)
 frameRate = pygame.time.Clock()
 
 while True:
-    frameRate.tick(60)
+    frameRate.tick(30)
     screen.fill(WHITE)
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             exit()
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE:
+                if dino.rect.y != dino.initialYpos-(32*3)/2:
+                    pass
+                else:
+                    dino.jump()
 
     allSprites.draw(screen)
     allSprites.update()
