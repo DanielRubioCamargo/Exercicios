@@ -27,6 +27,8 @@ class Dino(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.dinoList = list()
+        self.hasPlayed = False
+        self.deathSound = pygame.mixer.Sound(os.path.join(soundFile,"death_sound.wav"))
         self.jumpSound = pygame.mixer.Sound(os.path.join(soundFile,"jump_sound.wav"))
         self.jumpSound.set_volume(1)
         for i in range(3):
@@ -35,6 +37,7 @@ class Dino(pygame.sprite.Sprite):
             self.dinoList.append(self.img)
         self.currentIndex = 0
         self.image = self.dinoList[self.currentIndex]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.initialYpos = 385
         self.rect.topleft = (100,self.initialYpos)
@@ -58,6 +61,20 @@ class Dino(pygame.sprite.Sprite):
         if self.currentIndex > 2:
             self.currentIndex = 0
         self.image = self.dinoList[int(self.currentIndex)]
+
+class Cactus(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = spriteSheet.subsurface((5*32,0),(32,32))
+        self.image = pygame.transform.scale(self.image,(32*2,32*2))
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.center = (SCREEN_WIDTH,SCREEN_HEIGTH-96)
+
+    def update(self):
+        if self.rect.x + 32 < 0:
+            self.rect.x = SCREEN_WIDTH
+        self.rect.x -= 10
 
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
@@ -96,6 +113,11 @@ for i in range(20):
     ground = Ground(i*64)
     allSprites.add(ground)
 allSprites.add(dino)
+cactus = Cactus()
+allSprites.add(cactus)
+
+obstacleGroup = pygame.sprite.Group()
+obstacleGroup.add(cactus)
 
 frameRate = pygame.time.Clock()
 
@@ -113,7 +135,16 @@ while True:
                 else:
                     dino.jump()
 
+    collisionsList = pygame.sprite.spritecollide(dino,obstacleGroup,False,pygame.sprite.collide_mask)
+
     allSprites.draw(screen)
-    allSprites.update()
+
+    if len(collisionsList) == 1 and dino.hasPlayed == False:
+        dino.deathSound.play()
+        dino.hasPlayed = True
+    if dino.hasPlayed == True:
+        pass
+    else:
+        allSprites.update()
 
     pygame.display.flip()
