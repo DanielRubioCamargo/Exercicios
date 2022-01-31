@@ -1,9 +1,8 @@
-from locale import currency
 import pygame
 from pygame.locals import *
 from sys import exit
 import os
-from random import randrange
+from random import randrange, choice
 
 pygame.init()
 pygame.mixer.init()
@@ -14,6 +13,8 @@ soundFile = os.path.join(mainFile,"sons")
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGTH = 480
+
+obsChoice = choice([0,0,0,1])
 
 WHITE = (255,255,255)
 
@@ -65,16 +66,19 @@ class Dino(pygame.sprite.Sprite):
 class Cactus(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.choice = obsChoice
         self.image = spriteSheet.subsurface((5*32,0),(32,32))
         self.image = pygame.transform.scale(self.image,(32*2,32*2))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.center = (SCREEN_WIDTH,SCREEN_HEIGTH-96)
+        self.rect.x = SCREEN_WIDTH
+        self.rect.y = SCREEN_HEIGTH-128
 
     def update(self):
-        if self.rect.x + 32 < 0:
-            self.rect.x = SCREEN_WIDTH
-        self.rect.x -= 10
+        if self.choice == 0:
+            if self.rect.x + 32 <= 0:
+                self.rect.x = SCREEN_WIDTH
+            self.rect.x -= 10
 
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
@@ -88,6 +92,32 @@ class Clouds(pygame.sprite.Sprite):
         if self.rect.x < -40:
             self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH + (96*3),32*3))
         self.rect.x -= 10
+
+class FlyingDino(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.flyingDinoFrames = list()
+        self.choice = obsChoice
+        for i in range(2):
+            self.img = spriteSheet.subsurface(((i+3)*32,0),(32,32))
+            self.img = pygame.transform.scale(self.img,(32*3,32*3))
+            self.flyingDinoFrames.append(self.img)
+        self.currentPos = 0
+        self.image = self.flyingDinoFrames[self.currentPos]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = SCREEN_WIDTH
+        self.rect.y = 200
+
+    def update(self):
+        if self.choice == 1:
+            self.rect.x -= 10
+            if self.rect.x + 96 < 0:
+                self.rect.x = SCREEN_WIDTH
+            self.currentPos += 0.25
+            if self.currentPos > 1:
+                self.currentPos = 0
+            self.image = self.flyingDinoFrames[int(self.currentPos)]
 
 class Ground(pygame.sprite.Sprite):
     def __init__(self,xPos):
@@ -115,9 +145,13 @@ for i in range(20):
 allSprites.add(dino)
 cactus = Cactus()
 allSprites.add(cactus)
+for i in range(2):
+    fDino = FlyingDino()
+    allSprites.add(fDino)
 
 obstacleGroup = pygame.sprite.Group()
 obstacleGroup.add(cactus)
+obstacleGroup.add(fDino)
 
 frameRate = pygame.time.Clock()
 
@@ -138,6 +172,13 @@ while True:
     collisionsList = pygame.sprite.spritecollide(dino,obstacleGroup,False,pygame.sprite.collide_mask)
 
     allSprites.draw(screen)
+
+    if cactus.rect.x <= 0 or fDino.rect.x <= 0:
+        obsChoice = choice([0,0,0,1])
+        fDino.choice = obsChoice
+        cactus.choice = obsChoice
+        cactus.rect.x = SCREEN_WIDTH
+        fDino.rect.x = SCREEN_WIDTH
 
     if len(collisionsList) == 1 and dino.hasPlayed == False:
         dino.deathSound.play()
