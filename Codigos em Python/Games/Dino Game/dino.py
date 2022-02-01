@@ -1,3 +1,4 @@
+from numpy import disp
 import pygame
 from pygame.locals import *
 from sys import exit
@@ -14,11 +15,23 @@ soundFile = os.path.join(mainFile,"sons")
 SCREEN_WIDTH = 640
 SCREEN_HEIGTH = 480
 
+gameSpeed = 10
+
 obsChoice = choice([0,0,0,1])
 
 WHITE = (255,255,255)
+BLACK = (0,0,0)
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGTH))
+
+points = 0
+scoreSound = pygame.mixer.Sound(os.path.join(soundFile,"score_sound.wav"))
+
+def display_message(msg, size, color):
+    font = pygame.font.SysFont("comicsansms",size,True,False)
+    message = f"{msg}"
+    finalText = font.render(message,True,color)
+    return finalText
 
 pygame.display.set_caption('Dino Game')
 
@@ -78,7 +91,7 @@ class Cactus(pygame.sprite.Sprite):
         if self.choice == 0:
             if self.rect.x + 32 <= 0:
                 self.rect.x = SCREEN_WIDTH
-            self.rect.x -= 10
+            self.rect.x -= gameSpeed
 
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
@@ -91,7 +104,7 @@ class Clouds(pygame.sprite.Sprite):
     def update(self):
         if self.rect.x < -40:
             self.rect.x = (randrange(SCREEN_WIDTH,SCREEN_WIDTH + (96*3),32*3))
-        self.rect.x -= 10
+        self.rect.x -= gameSpeed
 
 class FlyingDino(pygame.sprite.Sprite):
     def __init__(self):
@@ -111,7 +124,7 @@ class FlyingDino(pygame.sprite.Sprite):
 
     def update(self):
         if self.choice == 1:
-            self.rect.x -= 10
+            self.rect.x -= gameSpeed
             if self.rect.x + 96 < 0:
                 self.rect.x = SCREEN_WIDTH
             self.currentPos += 0.25
@@ -186,6 +199,15 @@ while True:
     if dino.hasPlayed == True:
         pass
     else:
+        points += 1
+        updateMessage = display_message(points,40,BLACK)
+        if points%100 == 0:
+            scoreSound.play()
+            if gameSpeed >= 25:
+                gameSpeed += 0.1
+            else:
+                gameSpeed += 1
         allSprites.update()
 
+    screen.blit(updateMessage,(530,30))
     pygame.display.flip()
