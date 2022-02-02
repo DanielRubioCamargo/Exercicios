@@ -33,9 +33,24 @@ def display_message(msg, size, color):
     finalText = font.render(message,True,color)
     return finalText
 
+gameOverMessage = display_message("GAME OVER",40,BLACK)
+restartMessage = display_message("Press R to start a new game!",30,BLACK)
+
 pygame.display.set_caption('Dino Game')
 
 spriteSheet = pygame.image.load(os.path.join(imageFile,"dinoSpritesheet.png"))
+
+def restart_game():
+    global points, obsChoice, gameSpeed, collisionsList
+    #collisionsList.clear()
+    dino.hasPlayed = False
+    points = 0
+    obsChoice = choice([0,0,0,1])
+    gameSpeed = 10
+    dino.rect.y = 385-(32*3)/2
+    dino.isJumping = False
+    fDino.rect.x = SCREEN_WIDTH
+    cactus.rect.x = SCREEN_WIDTH
 
 class Dino(pygame.sprite.Sprite):
     def __init__(self):
@@ -173,14 +188,16 @@ while True:
     screen.fill(WHITE)
     for event in pygame.event.get():
         if event.type == QUIT:
-            pygame.quit()
+            pygame.quit() 
             exit()
         if event.type == KEYDOWN:
-            if event.key == K_SPACE:
+            if event.key == K_SPACE and len(collisionsList) != 1:
                 if dino.rect.y != dino.initialYpos-(32*3)/2:
                     pass
                 else:
                     dino.jump()
+            if event.key == K_r:
+                restart_game()
 
     collisionsList = pygame.sprite.spritecollide(dino,obstacleGroup,False,pygame.sprite.collide_mask)
 
@@ -193,9 +210,13 @@ while True:
         cactus.rect.x = SCREEN_WIDTH
         fDino.rect.x = SCREEN_WIDTH
 
-    if len(collisionsList) == 1 and dino.hasPlayed == False:
-        dino.deathSound.play()
-        dino.hasPlayed = True
+    if len(collisionsList) == 1:
+        screen.blit(gameOverMessage,(200,100))
+        screen.blit(restartMessage,(200,250))
+        if dino.hasPlayed == False:
+            dino.deathSound.play()
+            dino.hasPlayed = True
+
     if dino.hasPlayed == True:
         pass
     else:
