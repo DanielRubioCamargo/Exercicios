@@ -195,7 +195,7 @@ while True:
                 if dino.rect.y != dino.initialYpos-(32*3)/2:
                     pass
                 else:
-                    dino.jump()
+                   dino.jump()
             if event.key == K_r:
                 restart_game()
 
