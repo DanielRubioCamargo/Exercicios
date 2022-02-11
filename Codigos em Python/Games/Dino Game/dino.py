@@ -196,7 +196,7 @@ while True:
                     pass
                 else:
                    dino.jump()
-            if event.key == K_r:
+            if event.key == K_r and dino.hasPlayed == True:
                 restart_game()
 
     collisionsList = pygame.sprite.spritecollide(dino,obstacleGroup,False,pygame.sprite.collide_mask)
