@@ -8,6 +8,7 @@ pygame.init()
 
 def restart_game():
     global points, collisionList
+    player.hasDied = False
     points = 0
     collisionList = list()
     player.rect.x = player.initialXpos
@@ -15,6 +16,7 @@ def restart_game():
     player.isJumping = False
     player.isRunning = False
     player.isIdle = True
+    player.constant = -10
     rock.rect.y = randint(150,250)
     rock.rect.x = SCREEN_WIDTH
 
@@ -27,22 +29,22 @@ BLACK = (0,0,0)
 WHITE = (255,255,255)
 
 # screen atributes
-SCREEN_WIDTH = 640
+SCREEN_WIDTH = 960
 SCREEN_HEIGTH = 480
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGTH))
 gameTitle = pygame.display.set_caption("Stickman Game")
 
 # background image
-bgChoiceList = [0,0,0,0,0,0,0,0,0,1]
+bgChoiceList = [0,0,0,0,0,0,0,1]
 if choice(bgChoiceList) == 0:
     bgImage = pygame.image.load(os.path.join(imageDir,"background.gif"))
-elif choice(bgChoiceList) == 1:
+else:
     bgImage = pygame.image.load(os.path.join(imageDir,"riodejaneiro.jfif"))
 bgImage = pygame.transform.scale(bgImage,(SCREEN_WIDTH,SCREEN_HEIGTH))
 
 # frames per second
 frameRate = pygame.time.Clock()
-FPS = 30
+FPS = 60
 
 # spritesheet
 spritesheet = pygame.image.load(os.path.join(imageDir,"Test Pixel Arts.png"))
@@ -53,7 +55,11 @@ points = 0
 
 # fonts
 pointsFont = pygame.font.SysFont("arial",25,True,False)
+gameOverFont = pygame.font.SysFont("arial",40,True,False)
 
+# static messages
+gameOverMessage1 = "Game Over!"
+gameOverMessage2 = "Press 'R' to restart the game!"
 # classes
 # --------------------------------------------------------------------------------------------------------
 
@@ -65,6 +71,7 @@ class Player(pygame.sprite.Sprite):
         self.isJumping = False
         self.constant = -10
         self.speed = 10
+        self.hasDied = False
         self.idleFrames = list()
         self.runFrames = list()
         # jump animation
@@ -128,7 +135,7 @@ class Rock(pygame.sprite.Sprite):
 
     def update(self):
         global points
-        if self.rect.x < 0:
+        if self.rect.x + (spriteSize*3) < 0:
             points += 1
             self.rect.x = SCREEN_WIDTH
             self.rect.y = randint(150,250)  
@@ -157,30 +164,39 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_SPACE:
                 player.isJumping = True
+            if event.key == K_r:
+                if player.hasDied == True:
+                    restart_game()
+    
+    if player.hasDied == False:
+        if player.rect.x + spriteSize < 0:
+            player.rect.x = SCREEN_WIDTH
+        elif player.rect.x > SCREEN_WIDTH:
+            player.rect.x = -spriteSize
+        if pygame.key.get_pressed()[K_d]:
+            player.isIdle = False
+            player.isRunning = True
+            player.rect.x += player.speed
+        elif pygame.key.get_pressed()[K_a]:
+            player.isIdle = False
+            player.isRunning = True
+            player.rect.x -= player.speed
+        else:
+            player.isIdle = True
+            player.isRunning = False
 
     collisionList = pygame.sprite.spritecollide(player,obstaclesGroup,False,pygame.sprite.collide_mask)
 
-    if len(collisionList) == 1:
-        restart_game()
-
-    if player.rect.x + spriteSize < 0:
-        player.rect.x = SCREEN_WIDTH
-    elif player.rect.x > SCREEN_WIDTH:
-        player.rect.x = -spriteSize
-    if pygame.key.get_pressed()[K_d]:
-        player.isIdle = False
-        player.isRunning = True
-        player.rect.x += player.speed
-    elif pygame.key.get_pressed()[K_a]:
-        player.isIdle = False
-        player.isRunning = True
-        player.rect.x -= player.speed
-    else:
-        player.isIdle = True
-        player.isRunning = False
-
     screen.blit(bgImage,(0,0))
-    screen.blit(pointsText,(490,30))
+    screen.blit(pointsText,(SCREEN_WIDTH - 175,30))
     spritesGroup.draw(screen)
-    spritesGroup.update()
+    gameOverText1 = gameOverFont.render(gameOverMessage1,True,BLACK)
+    gameOverText2 = gameOverFont.render(gameOverMessage2,True,BLACK)
+    if len(collisionList) == 1:
+        player.hasDied = True
+        gameOverFrame = pygame.draw.rect(screen,(50,50,50),((SCREEN_WIDTH//2)-250,(SCREEN_HEIGTH//2)-10,625,110))
+        screen.blit(gameOverText1,((SCREEN_WIDTH//2)-100,SCREEN_HEIGTH//2))
+        screen.blit(gameOverText2,((SCREEN_WIDTH//2)-200,(SCREEN_HEIGTH//2) + 50))
+    else:
+        spritesGroup.update()
     pygame.display.flip()
