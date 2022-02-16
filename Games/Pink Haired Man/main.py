@@ -131,9 +131,53 @@ class Player(pygame.sprite.Sprite):
         elif self.isIdleLeft == True:
             self.image = self.idleLeftFrame
 
+class Rock(pygame.sprite.Sprite):
+    def __init__(self,xPos:float,yPos:float):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = objectsSpritesheet.subsurface((3*spriteSize,0),(spriteSize,spriteSize))
+        self.image = pygame.transform.scale(self.image,(spriteSize*2,spriteSize*2))
+        self.rect = self.image.get_rect()
+        self.rect.x = xPos
+        self.rect.y = yPos
+
+class Plant(pygame.sprite.Sprite):
+    def __init__(self,xPos:float,yPos:float):
+        pygame.sprite.Sprite.__init__(self)
+        # animation
+        self.plantFrames = list()
+        for i in range(3):
+            self.img = objectsSpritesheet.subsurface((i*spriteSize,0),(spriteSize,spriteSize))
+            self.plantFrames.append(self.img)
+        self.currentIndex = 0
+        self.image = self.plantFrames[self.currentIndex]
+        self.rect = self.image.get_rect()
+        self.rect.x = xPos
+        self.rect.y = yPos
+
+    def update(self):
+        if self.currentIndex > 2.4:
+            self.currentIndex = 0
+        self.currentIndex += 0.1
+        self.image = self.plantFrames[int(self.currentIndex)]
+
 spriteGroup = pygame.sprite.Group()
 player = Player()
+rock1 = Rock(400,250)
+rock2 = Rock(10,120)
+plant1 = Plant(400,110)
+plant2 = Plant(450,190)
+plant3 = Plant(100,3)
+plant4 = Plant(100,300)
+plant5 = Plant(40,360)
+spriteGroup.add(rock1)
+spriteGroup.add(rock2)
+spriteGroup.add(plant1)
+spriteGroup.add(plant2)
+spriteGroup.add(plant3)
+spriteGroup.add(plant4)
+spriteGroup.add(plant5)
 spriteGroup.add(player)
+
 
 #---------------------------------------------------------------------------------------------------------
 
