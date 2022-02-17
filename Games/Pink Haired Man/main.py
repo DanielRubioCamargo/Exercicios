@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from sys import exit
+from sys import _xoptions, exit
 import os
 from functions import *
 from random import randint,randrange,choice
@@ -13,9 +13,12 @@ imageDir = os.path.join(mainDir,"images")
 
 # spritesheets / sprites
 spriteSize = 96
+hpSpritesheet = pygame.image.load(os.path.join(imageDir,"HPUI.png"))
+arrowsSpritesheet = pygame.image.load(os.path.join(imageDir,"Arrows.png"))
 playerSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair SS.png"))
 objectsSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair Guy Objects.png"))
 sceneSprite = pygame.image.load(os.path.join(imageDir,"Park Image.png"))
+
 
 # colors
 BLACK = (0,0,0)
@@ -160,8 +163,135 @@ class Plant(pygame.sprite.Sprite):
         self.currentIndex += 0.1
         self.image = self.plantFrames[int(self.currentIndex)]
 
+class HPstatic(pygame.sprite.Sprite):
+    def __init__(self,xPos:float,yPos:float):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = hpSpritesheet.subsurface((0,0),(spriteSize,spriteSize))
+        self.image = pygame.transform.scale(self.image,(spriteSize*1.5,spriteSize*1.5))
+        self.rect = self.image.get_rect()
+        self.rect.x = xPos
+        self.rect.y = yPos
+
+# arrows
+#---------------------------------------------------------------------------------------------------------
+
+minY = 30
+
+class NormalLeftArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = arrowsSpritesheet.subsurface((0,0),(spriteSize,spriteSize))
+        self.rect = self.image.get_rect()
+        self.rect.x = SCREEN_WIDTH
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+    
+    def update(self):
+        if self.rect.x + spriteSize < 0:
+            self.rect.x = SCREEN_WIDTH
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x -= self.speed
+
+class NormalRigthArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = arrowsSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
+        self.rect = self.image.get_rect()
+        self.rect.x = -spriteSize
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+    
+    def update(self):
+        if self.rect.x > SCREEN_WIDTH:
+            self.rect.x = -spriteSize
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x += self.speed
+
+class PoisonLeftArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 12
+        self.image = arrowsSpritesheet.subsurface((0,spriteSize),(spriteSize,spriteSize))
+        self.rect = self.image.get_rect()
+        self.rect.x = -spriteSize
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+    
+    def update(self):
+        if self.rect.x + spriteSize < 0:
+            self.rect.x = SCREEN_WIDTH
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x -= self.speed
+
+class PoisonRightArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 12
+        self.image = arrowsSpritesheet.subsurface((spriteSize,spriteSize),(spriteSize,spriteSize))
+        self.rect = self.image.get_rect()
+        self.rect.x = -spriteSize
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+
+    def update(self):
+        if self.rect.x > SCREEN_WIDTH:
+            self.rect.x = -spriteSize
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x += self.speed
+
+class FlameLeftArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 8
+        # animation
+        self.flameArrowFrames = list()
+        for i in range(2):
+            self.img = arrowsSpritesheet.subsurface((i*spriteSize,spriteSize*2),(spriteSize,spriteSize))
+            self.flameArrowFrames.append(self.img)
+        self.currentIndex = 0
+        self.image = self.flameArrowFrames[self.currentIndex]
+        self.rect = self.image.get_rect()
+        self.rect.x = -spriteSize
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+
+    def update(self):
+        if self.currentIndex > 1.4:
+            self.currentIndex = 0
+        self.image = self.flameArrowFrames[int(self.currentIndex)]
+        self.currentIndex += 0.5
+        if self.rect.x + spriteSize < 0:
+            self.rect.x = SCREEN_WIDTH
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x -= self.speed
+
+class FlameRightArrow(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 8
+        # animation
+        self.flameArrowFrames = list()
+        for i in range(2):
+            self.img = arrowsSpritesheet.subsurface((i*spriteSize,spriteSize*3),(spriteSize,spriteSize))
+            self.flameArrowFrames.append(self.img)
+        self.currentIndex = 0
+        self.image = self.flameArrowFrames[self.currentIndex]
+        self.rect = self.image.get_rect()
+        self.rect.x = -spriteSize
+        self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+
+    def update(self):
+        if self.currentIndex > 1.4:
+            self.currentIndex = 0
+        self.image = self.flameArrowFrames[int(self.currentIndex)]
+        self.currentIndex += 0.5
+        if self.rect.x > SCREEN_WIDTH:
+            self.rect.x = -spriteSize
+            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+        self.rect.x += self.speed
+
+#---------------------------------------------------------------------------------------------------------
+
 spriteGroup = pygame.sprite.Group()
 player = Player()
+healthPointsStatic = HPstatic(SCREEN_WIDTH - 160,3)
 rock1 = Rock(400,250)
 rock2 = Rock(10,120)
 plant1 = Plant(400,110)
@@ -169,6 +299,12 @@ plant2 = Plant(450,190)
 plant3 = Plant(100,3)
 plant4 = Plant(100,300)
 plant5 = Plant(40,360)
+normalLeftArrow = NormalLeftArrow()
+normalRightArrow = NormalRigthArrow()
+poisonLeftArrow = PoisonLeftArrow()
+poisonRightArrow = PoisonRightArrow()
+flameLeftArrow = FlameLeftArrow()
+flameRightArrow = FlameRightArrow()
 spriteGroup.add(rock1)
 spriteGroup.add(rock2)
 spriteGroup.add(plant1)
@@ -176,8 +312,14 @@ spriteGroup.add(plant2)
 spriteGroup.add(plant3)
 spriteGroup.add(plant4)
 spriteGroup.add(plant5)
+spriteGroup.add(normalLeftArrow)
+spriteGroup.add(normalRightArrow)
+spriteGroup.add(poisonLeftArrow)
+spriteGroup.add(poisonRightArrow)
+spriteGroup.add(flameLeftArrow)
+spriteGroup.add(flameRightArrow)
 spriteGroup.add(player)
-
+spriteGroup.add(healthPointsStatic)
 
 #---------------------------------------------------------------------------------------------------------
 
