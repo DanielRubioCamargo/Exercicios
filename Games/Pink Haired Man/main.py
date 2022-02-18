@@ -1,8 +1,7 @@
 import pygame
 from pygame.locals import *
-from sys import _xoptions, exit
+from sys import exit
 import os
-from functions import *
 from random import randint,randrange,choice
 
 pygame.init()
@@ -26,6 +25,7 @@ WHITE = (255,255,255)
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
+PURPLE = (200,0,255)
 
 # screen
 SCREEN_WIDTH = 640
@@ -37,11 +37,24 @@ gameTitle = pygame.display.set_caption("Pink Haired Man")
 frameRate = pygame.time.Clock()
 FPS = 30
 
+# damage
+damageConstant = 1
+lastDmg = 0
+
+# texts / messages / fonts
+stunnedFont = pygame.font.SysFont("arial",20,True,False)
+stunnedMessage = "You've been damaged, you are imune for some time!"
+stunnedText = stunnedFont.render(stunnedMessage,True,PURPLE)
+
 # classes
 #---------------------------------------------------------------------------------------------------------
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+
+        self.isImune = False
+        self.hasCollided = False
+        self.timesCollided = 0
 
         self.speed = 8.5
 
@@ -92,6 +105,7 @@ class Player(pygame.sprite.Sprite):
 
         self.currentIndex = 0
         self.image = self.idleDownFrames[self.currentIndex]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.initialXpos = 300
         self.initialYpos = 200
@@ -139,6 +153,7 @@ class Rock(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = objectsSpritesheet.subsurface((3*spriteSize,0),(spriteSize,spriteSize))
         self.image = pygame.transform.scale(self.image,(spriteSize*2,spriteSize*2))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = xPos
         self.rect.y = yPos
@@ -176,66 +191,93 @@ class HPstatic(pygame.sprite.Sprite):
 #---------------------------------------------------------------------------------------------------------
 
 minY = 30
+probLeftList = [0,0,0,1,1,2,2]
+probRightList = [0,0,0,1,1,2,2]
+leftArrowChoice = choice(probLeftList)
+rightArrowChoice = choice(probRightList)
+amount = 0
+
+print(leftArrowChoice)
 
 class NormalLeftArrow(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.speed = 10
         self.image = arrowsSpritesheet.subsurface((0,0),(spriteSize,spriteSize))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = SCREEN_WIDTH
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        if self.rect.x + spriteSize < 0:
-            self.rect.x = SCREEN_WIDTH
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x -= self.speed
+        global leftArrowChoice, amount
+        if leftArrowChoice == 0:
+            if self.rect.x + spriteSize < 0:
+                amount += 1
+                self.rect.x = SCREEN_WIDTH
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                leftArrowChoice = choice(probLeftList)
+            self.rect.x -= self.speed
 
 class NormalRigthArrow(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.speed = 10
         self.image = arrowsSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -spriteSize
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        if self.rect.x > SCREEN_WIDTH:
-            self.rect.x = -spriteSize
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x += self.speed
+        global rightArrowChoice, amount
+        if rightArrowChoice == 0:
+            if self.rect.x > SCREEN_WIDTH:
+                amount += 1
+                self.rect.x = -spriteSize
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                rightArrowChoice = choice(probRightList)
+            self.rect.x += self.speed
 
 class PoisonLeftArrow(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.speed = 12
         self.image = arrowsSpritesheet.subsurface((0,spriteSize),(spriteSize,spriteSize))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -spriteSize
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        if self.rect.x + spriteSize < 0:
-            self.rect.x = SCREEN_WIDTH
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x -= self.speed
+        global leftArrowChoice, amount
+        if leftArrowChoice == 1:
+            if self.rect.x + spriteSize < 0:
+                amount += 1
+                self.rect.x = SCREEN_WIDTH
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                leftArrowChoice = choice(probLeftList)
+            self.rect.x -= self.speed
 
 class PoisonRightArrow(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.speed = 12
         self.image = arrowsSpritesheet.subsurface((spriteSize,spriteSize),(spriteSize,spriteSize))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -spriteSize
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        if self.rect.x > SCREEN_WIDTH:
-            self.rect.x = -spriteSize
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x += self.speed
+        global rightArrowChoice, amount
+        if rightArrowChoice == 1:
+            if self.rect.x > SCREEN_WIDTH:
+                amount += 1
+                self.rect.x = -spriteSize
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                rightArrowChoice = choice(probRightList)
+            self.rect.x += self.speed
 
 class FlameLeftArrow(pygame.sprite.Sprite):
     def __init__(self):
@@ -248,19 +290,24 @@ class FlameLeftArrow(pygame.sprite.Sprite):
             self.flameArrowFrames.append(self.img)
         self.currentIndex = 0
         self.image = self.flameArrowFrames[self.currentIndex]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -spriteSize
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        if self.currentIndex > 1.4:
-            self.currentIndex = 0
-        self.image = self.flameArrowFrames[int(self.currentIndex)]
-        self.currentIndex += 0.5
-        if self.rect.x + spriteSize < 0:
-            self.rect.x = SCREEN_WIDTH
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x -= self.speed
+        global leftArrowChoice, amount
+        if leftArrowChoice == 2:
+            if self.currentIndex > 1.4:
+                self.currentIndex = 0
+            self.image = self.flameArrowFrames[int(self.currentIndex)]
+            self.currentIndex += 0.5
+            if self.rect.x + spriteSize < 0:
+                amount += 1
+                self.rect.x = SCREEN_WIDTH
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                leftArrowChoice = choice(probLeftList)
+            self.rect.x -= self.speed
 
 class FlameRightArrow(pygame.sprite.Sprite):
     def __init__(self):
@@ -273,23 +320,29 @@ class FlameRightArrow(pygame.sprite.Sprite):
             self.flameArrowFrames.append(self.img)
         self.currentIndex = 0
         self.image = self.flameArrowFrames[self.currentIndex]
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = -spriteSize
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        if self.currentIndex > 1.4:
-            self.currentIndex = 0
-        self.image = self.flameArrowFrames[int(self.currentIndex)]
-        self.currentIndex += 0.5
-        if self.rect.x > SCREEN_WIDTH:
-            self.rect.x = -spriteSize
-            self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
-        self.rect.x += self.speed
+        global rightArrowChoice, amount
+        if rightArrowChoice == 2:
+            if self.currentIndex > 1.4:
+                self.currentIndex = 0
+            self.image = self.flameArrowFrames[int(self.currentIndex)]
+            self.currentIndex += 0.5
+            if self.rect.x > SCREEN_WIDTH:
+                amount += 1
+                self.rect.x = -spriteSize
+                self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
+                rightArrowChoice = choice(probRightList)
+            self.rect.x += self.speed
 
 #---------------------------------------------------------------------------------------------------------
 
 spriteGroup = pygame.sprite.Group()
+damagingGroup = pygame.sprite.Group()
 player = Player()
 healthPointsStatic = HPstatic(SCREEN_WIDTH - 160,3)
 rock1 = Rock(400,250)
@@ -320,6 +373,12 @@ spriteGroup.add(flameLeftArrow)
 spriteGroup.add(flameRightArrow)
 spriteGroup.add(player)
 spriteGroup.add(healthPointsStatic)
+damagingGroup.add(normalLeftArrow)
+damagingGroup.add(normalRightArrow)
+damagingGroup.add(poisonLeftArrow)
+damagingGroup.add(poisonRightArrow)
+damagingGroup.add(flameLeftArrow)
+damagingGroup.add(flameRightArrow)
 
 #---------------------------------------------------------------------------------------------------------
 
@@ -399,7 +458,35 @@ while True:
             player.isWalkingLeft = False
             player.isIdleLeft = True
 
+    rockCollisionList = pygame.sprite.spritecollide
+    playerCollisionList = pygame.sprite.spritecollide(player,damagingGroup,False,pygame.sprite.collide_mask)
+    collisionRate = len(playerCollisionList)
+
     screen.blit(sceneSprite,(0,0))
+
+    if amount > 4 and player.isImune == True:
+        player.speed = 10
+        player.isImune = False
+        damageConstant = 1
+
+    if player.isImune == True:
+        screen.blit(stunnedText,(5,5))
+
     spriteGroup.draw(screen)
-    spriteGroup.update()
+
+    print(player.timesCollided)
+    
+    if collisionRate != lastDmg and player.isImune == False:
+        amount = 0
+        player.hasCollided = True
+        player.isImune = True
+        player.speed = 3
+        player.timesCollided += damageConstant
+        damageConstant = 0
+
+    if player.timesCollided == 3:
+        break
+    else:
+        spriteGroup.update()
+
     pygame.display.flip()
