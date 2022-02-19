@@ -2,15 +2,34 @@ import pygame
 from pygame.locals import *
 from sys import exit
 import os
-from random import randint,randrange,choice
+from random import randint,choice
 
 pygame.init()
+
+# functions
+def restart_game():
+    global lastDmg, amount
+    player.isDead = False
+    lastDmg = 0
+    amount = 0
+    player.speed = 8.5
+    player.rect.x = player.initialXpos
+    player.rect.y = player.initialYpos
+    player.timesCollided = 0
+    player.isImune = False
+    player.hasCollided = False
+    normalLeftArrow.rect.x = SCREEN_WIDTH
+    normalRightArrow.rect.x = -spriteSize
+    poisonLeftArrow.rect.x = SCREEN_WIDTH
+    poisonRightArrow.rect.x = -spriteSize
+    flameLeftArrow.rect.x = SCREEN_WIDTH
+    flameRightArrow.rect.x = -spriteSize
 
 # dir
 mainDir = os.path.dirname(__file__)
 imageDir = os.path.join(mainDir,"images")
 
-# spritesheets / sprites
+# spritesheets / sprites loadings
 spriteSize = 96
 hpSpritesheet = pygame.image.load(os.path.join(imageDir,"HPUI.png"))
 arrowsSpritesheet = pygame.image.load(os.path.join(imageDir,"Arrows.png"))
@@ -38,13 +57,25 @@ frameRate = pygame.time.Clock()
 FPS = 30
 
 # damage
-damageConstant = 1
+normalDamageConstant = 1
+poisonDamageConstant = 2
 lastDmg = 0
 
 # texts / messages / fonts
+fpsFont = pygame.font.SysFont("arial",20,True,False)
+fpsMessage = f"FPS : {FPS}"
+fpsText = fpsFont.render(fpsMessage,True,BLACK)
+
 stunnedFont = pygame.font.SysFont("arial",20,True,False)
 stunnedMessage = "You've been damaged, you are imune for some time!"
 stunnedText = stunnedFont.render(stunnedMessage,True,PURPLE)
+
+gameOverFont1 = pygame.font.SysFont("comicsansms",50,True,True)
+gameOverFont2 = pygame.font.SysFont("comicsansms",30,True,True)
+gameOverMessage1 = "Game Over!"
+gameOverMessage2 = "Press 'R' to restart the game!"
+gameOverText1 = gameOverFont1.render(gameOverMessage1,True,RED)
+gameOverText2 = gameOverFont2.render(gameOverMessage2,True,BLACK)
 
 # classes
 #---------------------------------------------------------------------------------------------------------
@@ -55,6 +86,7 @@ class Player(pygame.sprite.Sprite):
         self.isImune = False
         self.hasCollided = False
         self.timesCollided = 0
+        self.isDead = False
 
         self.speed = 8.5
 
@@ -342,7 +374,9 @@ class FlameRightArrow(pygame.sprite.Sprite):
 #---------------------------------------------------------------------------------------------------------
 
 spriteGroup = pygame.sprite.Group()
-damagingGroup = pygame.sprite.Group()
+normalDamagingGroup = pygame.sprite.Group()
+poisonDamagingGroup = pygame.sprite.Group()
+flameDamagingGroup = pygame.sprite.Group()
 player = Player()
 healthPointsStatic = HPstatic(SCREEN_WIDTH - 160,3)
 rock1 = Rock(400,250)
@@ -373,12 +407,12 @@ spriteGroup.add(flameLeftArrow)
 spriteGroup.add(flameRightArrow)
 spriteGroup.add(player)
 spriteGroup.add(healthPointsStatic)
-damagingGroup.add(normalLeftArrow)
-damagingGroup.add(normalRightArrow)
-damagingGroup.add(poisonLeftArrow)
-damagingGroup.add(poisonRightArrow)
-damagingGroup.add(flameLeftArrow)
-damagingGroup.add(flameRightArrow)
+normalDamagingGroup.add(normalLeftArrow)
+normalDamagingGroup.add(normalRightArrow)
+poisonDamagingGroup.add(poisonLeftArrow)
+poisonDamagingGroup.add(poisonRightArrow)
+flameDamagingGroup.add(flameLeftArrow)
+flameDamagingGroup.add(flameRightArrow)
 
 #---------------------------------------------------------------------------------------------------------
 
@@ -390,6 +424,9 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             exit()
+        if event.type == KEYDOWN:
+            if event.key == K_r and player.isDead == True:
+                restart_game()
 
     if player.rect.x + spriteSize < 0:
         player.rect.x = SCREEN_WIDTH
@@ -400,92 +437,113 @@ while True:
     elif player.rect.y > SCREEN_HEIGTH:
         player.rect.y = -spriteSize
 
-    if pygame.key.get_pressed()[K_d]:
-        player.lastMove = "D"
-        player.rect.x += player.speed
-        player.isIdleDown = False
-        player.isWalkingDown = False
-        player.isWalkingUp = False
-        player.isIdleUp = False
-        player.isWalkingRight = True
-        player.isIdleRight = False
-        player.isWalkingLeft = False
-        player.isIdleLeft = False
-    elif pygame.key.get_pressed()[K_a]:
-        player.lastMove = "A"
-        player.rect.x -= player.speed
-        player.isIdleDown = False
-        player.isWalkingDown = False
-        player.isWalkingUp = False
-        player.isIdleUp = False
-        player.isWalkingRight = False
-        player.isIdleRight = False
-        player.isWalkingLeft = True
-        player.isIdleLeft = False
-    elif pygame.key.get_pressed()[K_w]:
-        player.lastMove = "W"
-        player.rect.y -= player.speed
-        player.isIdleDown = False
-        player.isWalkingDown = False
-        player.isWalkingUp = True
-        player.isIdleUp = False
-        player.isWalkingRight = False
-        player.isIdleRight = False
-        player.isWalkingLeft = False
-        player.isIdleLeft = False
-    elif pygame.key.get_pressed()[K_s]:
-        player.lastMove = "S"
-        player.rect.y += player.speed
-        player.isIdleDown = False
-        player.isWalkingDown = True
-        player.isWalkingUp = False
-        player.isIdleUp = False
-        player.isWalkingRight = False
-        player.isIdleRight = False
-        player.isWalkingLeft = False
-        player.isIdleLeft = False
-    else:
-        if player.lastMove == "S":
+    if player.isDead == False:
+        if pygame.key.get_pressed()[K_d]:
+            player.lastMove = "D"
+            player.rect.x += player.speed
+            player.isIdleDown = False
             player.isWalkingDown = False
-            player.isIdleDown = True
-        elif player.lastMove == "W":
             player.isWalkingUp = False
-            player.isIdleUp = True
-        elif player.lastMove == "D":
-            player.isWalkingRight = False
-            player.isIdleRight = True
-        elif player.lastMove == "A":
+            player.isIdleUp = False
+            player.isWalkingRight = True
+            player.isIdleRight = False
             player.isWalkingLeft = False
-            player.isIdleLeft = True
+            player.isIdleLeft = False
+        elif pygame.key.get_pressed()[K_a]:
+            player.lastMove = "A"
+            player.rect.x -= player.speed
+            player.isIdleDown = False
+            player.isWalkingDown = False
+            player.isWalkingUp = False
+            player.isIdleUp = False
+            player.isWalkingRight = False
+            player.isIdleRight = False
+            player.isWalkingLeft = True
+            player.isIdleLeft = False
+        elif pygame.key.get_pressed()[K_w]:
+            player.lastMove = "W"
+            player.rect.y -= player.speed
+            player.isIdleDown = False
+            player.isWalkingDown = False
+            player.isWalkingUp = True
+            player.isIdleUp = False
+            player.isWalkingRight = False
+            player.isIdleRight = False
+            player.isWalkingLeft = False
+            player.isIdleLeft = False
+        elif pygame.key.get_pressed()[K_s]:
+            player.lastMove = "S"
+            player.rect.y += player.speed
+            player.isIdleDown = False
+            player.isWalkingDown = True
+            player.isWalkingUp = False
+            player.isIdleUp = False
+            player.isWalkingRight = False
+            player.isIdleRight = False
+            player.isWalkingLeft = False
+            player.isIdleLeft = False
+        else:
+            if player.lastMove == "S":
+                player.isWalkingDown = False
+                player.isIdleDown = True
+            elif player.lastMove == "W":
+                player.isWalkingUp = False
+                player.isIdleUp = True
+            elif player.lastMove == "D":
+                player.isWalkingRight = False
+                player.isIdleRight = True
+            elif player.lastMove == "A":
+                player.isWalkingLeft = False
+                player.isIdleLeft = True
 
-    rockCollisionList = pygame.sprite.spritecollide
-    playerCollisionList = pygame.sprite.spritecollide(player,damagingGroup,False,pygame.sprite.collide_mask)
-    collisionRate = len(playerCollisionList)
+    normalCollisionList = pygame.sprite.spritecollide(player,normalDamagingGroup,False,pygame.sprite.collide_mask)
+    poisonCollisionList = pygame.sprite.spritecollide(player,poisonDamagingGroup,False,pygame.sprite.collide_mask)
+    flameCollisionList = pygame.sprite.spritecollide(player,flameDamagingGroup,False,pygame.sprite.collide_mask)
 
     screen.blit(sceneSprite,(0,0))
 
     if amount > 4 and player.isImune == True:
         player.speed = 10
         player.isImune = False
-        damageConstant = 1
+        poisonDamageConstant = 2
+        normalDamageConstant = 1
 
-    if player.isImune == True:
+    if player.isImune == True and player.isDead == False:
         screen.blit(stunnedText,(5,5))
 
     spriteGroup.draw(screen)
 
+    screen.blit(fpsText,(SCREEN_WIDTH - 80,SCREEN_HEIGTH - 23))
+
     print(player.timesCollided)
     
-    if collisionRate != lastDmg and player.isImune == False:
+    if len(normalCollisionList) != lastDmg and player.isImune == False:
         amount = 0
         player.hasCollided = True
         player.isImune = True
         player.speed = 3
-        player.timesCollided += damageConstant
+        player.timesCollided += normalDamageConstant
         damageConstant = 0
 
-    if player.timesCollided == 3:
-        break
+    if len(poisonCollisionList) != lastDmg and player.isImune == False:
+        amount = 0
+        player.hasCollided = True
+        player.isImune = True
+        player.speed = 3
+        player.timesCollided += poisonDamageConstant
+        damageConstant = 0
+
+    if len(flameCollisionList) == 1 and player.isImune == False:
+        player.isDead = True
+
+    if player.timesCollided >= 3:
+        player.isDead = True
+        
+    if player.isDead == True:
+        gameOverBg1 = pygame.draw.rect(screen,BLACK,(40,40,SCREEN_WIDTH - 80,SCREEN_HEIGTH - 80))
+        gameOverBg2 = pygame.draw.rect(screen,WHITE,(50,50,SCREEN_WIDTH - 100,SCREEN_HEIGTH - 100))
+        screen.blit(gameOverText1,(175,150))
+        screen.blit(gameOverText2,(100,240))
     else:
         spriteGroup.update()
 
