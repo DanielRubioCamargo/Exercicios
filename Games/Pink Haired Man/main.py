@@ -36,7 +36,15 @@ arrowsSpritesheet = pygame.image.load(os.path.join(imageDir,"Arrows.png"))
 playerSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair SS.png"))
 objectsSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair Guy Objects.png"))
 sceneSprite = pygame.image.load(os.path.join(imageDir,"Park Image.png"))
+tutorialSprite = pygame.image.load(os.path.join(imageDir,"Tutorial.png"))
 
+# static hearts
+heart1 = hpSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
+heart1 = pygame.transform.scale(heart1,(spriteSize*1.5,spriteSize*1.5))
+heart2 = hpSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
+heart2 = pygame.transform.scale(heart2,(spriteSize*1.5,spriteSize*1.5))
+heart3 = hpSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
+heart3 = pygame.transform.scale(heart3,(spriteSize*1.5,spriteSize*1.5))
 
 # colors
 BLACK = (0,0,0)
@@ -45,6 +53,7 @@ RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
 PURPLE = (200,0,255)
+RANDOM = (randint(0,255),randint(0,255),randint(0,255))
 
 # screen
 SCREEN_WIDTH = 640
@@ -76,6 +85,9 @@ gameOverMessage1 = "Game Over!"
 gameOverMessage2 = "Press 'R' to restart the game!"
 gameOverText1 = gameOverFont1.render(gameOverMessage1,True,RED)
 gameOverText2 = gameOverFont2.render(gameOverMessage2,True,BLACK)
+
+# game mode
+gameMode = 0
 
 # classes
 #---------------------------------------------------------------------------------------------------------
@@ -228,8 +240,6 @@ probRightList = [0,0,0,1,1,2,2]
 leftArrowChoice = choice(probLeftList)
 rightArrowChoice = choice(probRightList)
 amount = 0
-
-print(leftArrowChoice)
 
 class NormalLeftArrow(pygame.sprite.Sprite):
     def __init__(self):
@@ -427,6 +437,9 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_r and player.isDead == True:
                 restart_game()
+            if event.key == pygame.K_RETURN and gameMode == 0:
+                gameMode = 1
+
 
     if player.rect.x + spriteSize < 0:
         player.rect.x = SCREEN_WIDTH
@@ -513,9 +526,17 @@ while True:
 
     spriteGroup.draw(screen)
 
+    if player.timesCollided <= 3:
+        screen.blit(heart1,(SCREEN_WIDTH - 119,0))
+        if player.timesCollided < 2:   
+            screen.blit(heart2,(SCREEN_WIDTH - 155,0)) 
+            if player.timesCollided < 1:
+                screen.blit(heart3,(SCREEN_WIDTH - 191,0))
+
     screen.blit(fpsText,(SCREEN_WIDTH - 80,SCREEN_HEIGTH - 23))
 
-    print(player.timesCollided)
+    # test
+    #print(player.timesCollided)
     
     if len(normalCollisionList) != lastDmg and player.isImune == False:
         amount = 0
@@ -541,10 +562,13 @@ while True:
         
     if player.isDead == True:
         gameOverBg1 = pygame.draw.rect(screen,BLACK,(40,40,SCREEN_WIDTH - 80,SCREEN_HEIGTH - 80))
-        gameOverBg2 = pygame.draw.rect(screen,WHITE,(50,50,SCREEN_WIDTH - 100,SCREEN_HEIGTH - 100))
+        gameOverBg2 = pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(45,45,SCREEN_WIDTH - 90,SCREEN_HEIGTH - 90))
+        gameOverBg3 = pygame.draw.rect(screen,WHITE,(50,50,SCREEN_WIDTH - 100,SCREEN_HEIGTH - 100))
         screen.blit(gameOverText1,(175,150))
         screen.blit(gameOverText2,(100,240))
-    else:
+    elif gameMode == 1:
         spriteGroup.update()
+    elif gameMode == 0:
+        screen.blit(tutorialSprite,(0,0))
 
     pygame.display.flip()
