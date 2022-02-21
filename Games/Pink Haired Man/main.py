@@ -8,10 +8,11 @@ pygame.init()
 
 # functions
 def restart_game():
-    global lastDmg, amount
+    global lastDmg, amountToReset, amountTotal
     player.isDead = False
+    amountTotal = 0
     lastDmg = 0
-    amount = 0
+    amountToReset = 0
     player.speed = 8.5
     player.rect.x = player.initialXpos
     player.rect.y = player.initialYpos
@@ -36,7 +37,9 @@ arrowsSpritesheet = pygame.image.load(os.path.join(imageDir,"Arrows.png"))
 playerSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair SS.png"))
 objectsSpritesheet = pygame.image.load(os.path.join(imageDir,"Pink Hair Guy Objects.png"))
 sceneSprite = pygame.image.load(os.path.join(imageDir,"Park Image.png"))
-tutorialSprite = pygame.image.load(os.path.join(imageDir,"Tutorial.png"))
+tutorialImage = pygame.image.load(os.path.join(imageDir,"Tutorial.png"))
+pauseImage = pygame.image.load(os.path.join(imageDir,"Pause.png"))
+skullSprite = pygame.image.load(os.path.join(imageDir,"Game Over Skull.png"))
 
 # static hearts
 heart1 = hpSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
@@ -70,6 +73,9 @@ normalDamageConstant = 1
 poisonDamageConstant = 2
 lastDmg = 0
 
+# points
+points = 0
+
 # texts / messages / fonts
 fpsFont = pygame.font.SysFont("arial",20,True,False)
 fpsMessage = f"FPS : {FPS}"
@@ -85,6 +91,9 @@ gameOverMessage1 = "Game Over!"
 gameOverMessage2 = "Press 'R' to restart the game!"
 gameOverText1 = gameOverFont1.render(gameOverMessage1,True,RED)
 gameOverText2 = gameOverFont2.render(gameOverMessage2,True,BLACK)
+
+pointsFont = pygame.font.SysFont("comicsansms",20,True,True)
+finalPointsFont = pygame.font.SysFont("comicsansms",25,True,False)
 
 # game mode
 gameMode = 0
@@ -239,7 +248,8 @@ probLeftList = [0,0,0,1,1,2,2]
 probRightList = [0,0,0,1,1,2,2]
 leftArrowChoice = choice(probLeftList)
 rightArrowChoice = choice(probRightList)
-amount = 0
+amountToReset = 0
+amountTotal = 0
 
 class NormalLeftArrow(pygame.sprite.Sprite):
     def __init__(self):
@@ -252,10 +262,11 @@ class NormalLeftArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        global leftArrowChoice, amount
+        global leftArrowChoice, amountToReset, amountTotal 
         if leftArrowChoice == 0:
             if self.rect.x + spriteSize < 0:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = SCREEN_WIDTH
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 leftArrowChoice = choice(probLeftList)
@@ -272,10 +283,11 @@ class NormalRigthArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        global rightArrowChoice, amount
+        global rightArrowChoice, amountToReset, amountTotal
         if rightArrowChoice == 0:
             if self.rect.x > SCREEN_WIDTH:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = -spriteSize
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 rightArrowChoice = choice(probRightList)
@@ -292,10 +304,11 @@ class PoisonLeftArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
     
     def update(self):
-        global leftArrowChoice, amount
+        global leftArrowChoice, amountToReset, amountTotal
         if leftArrowChoice == 1:
             if self.rect.x + spriteSize < 0:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = SCREEN_WIDTH
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 leftArrowChoice = choice(probLeftList)
@@ -312,10 +325,11 @@ class PoisonRightArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        global rightArrowChoice, amount
+        global rightArrowChoice, amountToReset, amountTotal
         if rightArrowChoice == 1:
             if self.rect.x > SCREEN_WIDTH:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = -spriteSize
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 rightArrowChoice = choice(probRightList)
@@ -338,14 +352,15 @@ class FlameLeftArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        global leftArrowChoice, amount
+        global leftArrowChoice, amountToReset, amountTotal
         if leftArrowChoice == 2:
             if self.currentIndex > 1.4:
                 self.currentIndex = 0
             self.image = self.flameArrowFrames[int(self.currentIndex)]
             self.currentIndex += 0.5
             if self.rect.x + spriteSize < 0:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = SCREEN_WIDTH
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 leftArrowChoice = choice(probLeftList)
@@ -368,14 +383,15 @@ class FlameRightArrow(pygame.sprite.Sprite):
         self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
 
     def update(self):
-        global rightArrowChoice, amount
+        global rightArrowChoice, amountToReset, amountTotal
         if rightArrowChoice == 2:
             if self.currentIndex > 1.4:
                 self.currentIndex = 0
             self.image = self.flameArrowFrames[int(self.currentIndex)]
             self.currentIndex += 0.5
             if self.rect.x > SCREEN_WIDTH:
-                amount += 1
+                amountToReset += 1
+                amountTotal += 1
                 self.rect.x = -spriteSize
                 self.rect.y = randint(minY,SCREEN_HEIGTH - 100)
                 rightArrowChoice = choice(probRightList)
@@ -437,8 +453,10 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_r and player.isDead == True:
                 restart_game()
-            if event.key == pygame.K_RETURN and gameMode == 0:
+            if event.key == pygame.K_RETURN and (gameMode == 0 or gameMode == 2):
                 gameMode = 1
+            if event.key == pygame.K_ESCAPE and gameMode != 0:
+                gameMode = 2
 
 
     if player.rect.x + spriteSize < 0:
@@ -515,7 +533,7 @@ while True:
 
     screen.blit(sceneSprite,(0,0))
 
-    if amount > 4 and player.isImune == True:
+    if amountToReset > 4 and player.isImune == True:
         player.speed = 10
         player.isImune = False
         poisonDamageConstant = 2
@@ -526,12 +544,18 @@ while True:
 
     spriteGroup.draw(screen)
 
+    pointsMessage = f"Points : {amountTotal}"
+    pointsText = pointsFont.render(pointsMessage,True,BLACK)
+    screen.blit(pointsText,(SCREEN_WIDTH - 140,100))
+    finalPointsMessage = f"Final Points : {amountTotal}"
+    finalPointsText = finalPointsFont.render(finalPointsMessage,True,BLACK)
+
     if player.timesCollided <= 3:
-        screen.blit(heart1,(SCREEN_WIDTH - 119,0))
+        screen.blit(heart1,(SCREEN_WIDTH - 119,-1))
         if player.timesCollided < 2:   
-            screen.blit(heart2,(SCREEN_WIDTH - 155,0)) 
+            screen.blit(heart2,(SCREEN_WIDTH - 155,-1)) 
             if player.timesCollided < 1:
-                screen.blit(heart3,(SCREEN_WIDTH - 191,0))
+                screen.blit(heart3,(SCREEN_WIDTH - 191,-1))
 
     screen.blit(fpsText,(SCREEN_WIDTH - 80,SCREEN_HEIGTH - 23))
 
@@ -539,7 +563,7 @@ while True:
     #print(player.timesCollided)
     
     if len(normalCollisionList) != lastDmg and player.isImune == False:
-        amount = 0
+        amountToReset = 0
         player.hasCollided = True
         player.isImune = True
         player.speed = 3
@@ -547,7 +571,7 @@ while True:
         damageConstant = 0
 
     if len(poisonCollisionList) != lastDmg and player.isImune == False:
-        amount = 0
+        amountToReset = 0
         player.hasCollided = True
         player.isImune = True
         player.speed = 3
@@ -564,11 +588,15 @@ while True:
         gameOverBg1 = pygame.draw.rect(screen,BLACK,(40,40,SCREEN_WIDTH - 80,SCREEN_HEIGTH - 80))
         gameOverBg2 = pygame.draw.rect(screen,(randint(0,255),randint(0,255),randint(0,255)),(45,45,SCREEN_WIDTH - 90,SCREEN_HEIGTH - 90))
         gameOverBg3 = pygame.draw.rect(screen,WHITE,(50,50,SCREEN_WIDTH - 100,SCREEN_HEIGTH - 100))
-        screen.blit(gameOverText1,(175,150))
-        screen.blit(gameOverText2,(100,240))
+        screen.blit(gameOverText1,(175,170))
+        screen.blit(gameOverText2,(100,260))
+        screen.blit(finalPointsText,((SCREEN_WIDTH//2) - 90,320))
+        screen.blit(skullSprite,(280,80))
+    elif gameMode == 2:
+        screen.blit(pauseImage,(0,0))
     elif gameMode == 1:
         spriteGroup.update()
     elif gameMode == 0:
-        screen.blit(tutorialSprite,(0,0))
+        screen.blit(tutorialImage,(0,0))
 
     pygame.display.flip()
