@@ -5,6 +5,7 @@ import os
 from random import randint,choice
 
 pygame.init()
+pygame.mixer.init()
 
 # functions
 def restart_game():
@@ -29,6 +30,7 @@ def restart_game():
 # dir
 mainDir = os.path.dirname(__file__)
 imageDir = os.path.join(mainDir,"images")
+soundDir = os.path.join(mainDir,"sounds")
 
 # spritesheets / sprites loadings
 spriteSize = 96
@@ -40,6 +42,10 @@ sceneSprite = pygame.image.load(os.path.join(imageDir,"Park Image.png"))
 tutorialImage = pygame.image.load(os.path.join(imageDir,"Tutorial.png"))
 pauseImage = pygame.image.load(os.path.join(imageDir,"Pause.png"))
 skullSprite = pygame.image.load(os.path.join(imageDir,"Game Over Skull.png"))
+
+# sounds
+bgSong = pygame.mixer.music.load(os.path.join(soundDir,"Through the fire and the flames.mp3"))
+pygame.mixer.music.play(-1)
 
 # static hearts
 heart1 = hpSpritesheet.subsurface((spriteSize,0),(spriteSize,spriteSize))
