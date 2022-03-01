@@ -79,10 +79,10 @@ winFont = pygame.font.SysFont("Arial",30,True,True)
 
 # Win Song
 pygame.mixer.music.set_volume(0.2)
-winSong = pygame.mixer.Sound("Codigos em Python\\Games\\Teste\\Chaves   Tema de Abertura Original Televisa Completo.mp3")
+#winSong = pygame.mixer.Sound("Codigos em Python\\Games\\Teste\\Chaves   Tema de Abertura Original Televisa Completo.mp3")
 
 # Images
-spaceBackground = pygame.image.load("Codigos em Python\\Games\\Teste\\Space Invaders\\spaceImage.jpg")
+#spaceBackground = pygame.image.load("Codigos em Python\\Games\\Teste\\Space Invaders\\spaceImage.jpg")
 winImage = pygame.image.load("Codigos em Python\\Games\\Teste\\Space Invaders\\Win.png")
 
 # Colors
