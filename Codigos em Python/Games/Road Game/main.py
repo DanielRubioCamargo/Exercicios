@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 import os
+from random import choice
 
 pygame.init()
 
@@ -18,6 +19,10 @@ spritesheet = pygame.image.load(os.path.join(imageDir,"spritesheet.png"))
 
 backgroundImage = spritesheet.subsurface((SPRITE_SIZE*2,0),(SPRITE_SIZE,SPRITE_SIZE))
 backgroundImage = pygame.transform.scale(backgroundImage,(SCREEN_WIDTH,SCREEN_HEIGTH))
+bgCount1 = 0
+backgroundImage2 = spritesheet.subsurface((SPRITE_SIZE*2,0),(SPRITE_SIZE,SPRITE_SIZE))
+backgroundImage2 = pygame.transform.scale(backgroundImage,(SCREEN_WIDTH,SCREEN_HEIGTH))
+bgCount2 = -600
 
 clock = pygame.time.Clock()
 FPS = 30
@@ -60,13 +65,36 @@ class Car(pygame.sprite.Sprite):
             self.xSpeed = 0
             self.hasToMoveLeft = False
             self.initialXpos = self.rect.x
-        self.rect.x += self.xSpeed
+        else:
+            self.rect.x += self.xSpeed
+
+class GreenCar(pygame.sprite.Sprite):
+    def __init__(self, yPos : float):
+        pygame.sprite.Sprite.__init__(self)
+        self.ySpeed = 10
+        self.xList = [-10,220,450]
+        self.image = spritesheet.subsurface((SPRITE_SIZE,0),(SPRITE_SIZE,SPRITE_SIZE))
+        self.image = pygame.transform.scale(self.image,(SPRITE_SIZE*2,SPRITE_SIZE*2))
+        self.rect = self.image.get_rect()
+        self.rect.x = choice(self.xList)
+        self.rect.y = yPos
+
+    def update(self):
+        if self.rect.y >= SCREEN_HEIGTH:
+            self.rect.y = -SPRITE_SIZE*2
+            self.rect.x = choice(self.xList)
+        self.rect.y += self.ySpeed
 
 spriteGroup = pygame.sprite.Group()
 car = Car()
+greenCar1 = GreenCar(-SPRITE_SIZE*2)
+greenCar2 = GreenCar(-SPRITE_SIZE*5)
 spriteGroup.add(car)
+spriteGroup.add(greenCar1)
+spriteGroup.add(greenCar2)
 
 while True:
+    screen.fill((0,0,0))
     print(car.rect.x)
     clock.tick(FPS)
     for event in pygame.event.get():
@@ -74,12 +102,21 @@ while True:
             pygame.quit()
             exit()
         if event.type == KEYDOWN:
-            if event.key == K_d and (car.rect.x != 450):
+            if event.key == K_d and (car.rect.x != 450) and car.hasToMoveLeft == False:
                 car.hasToMoveRight = True
-            elif event.key == K_a and (car.rect.x != -10):
+            elif event.key == K_a and (car.rect.x != -10) and car.hasToMoveRight == False:
                 car.hasToMoveLeft = True
 
-    screen.blit(backgroundImage,(0,0))
+    bgCount1 += 10
+    bgCount2 += 10
+
+    if bgCount1 == 600:
+        bgCount1 = -600
+    if bgCount2 == 600:
+        bgCount2 = -600
+
+    screen.blit(backgroundImage,(0,bgCount1))
+    screen.blit(backgroundImage2,(0,bgCount2))
     spriteGroup.draw(screen)
     spriteGroup.update()
     pygame.display.flip()
