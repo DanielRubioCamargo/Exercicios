@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from sys import exit
-from random import randint
+from random import randint, choice
 
 pygame.init()
 
@@ -67,7 +67,10 @@ while True:
     player2 = pygame.draw.rect(screen,player2Color,(player2X,player2Y,player2Width,player2Heigth))
     ball = pygame.draw.rect(screen,ballColor,(ballX,ballY,ballWidth,ballHeigth))
 
+    yList = [1,-1]
+
     if player.colliderect(ball) or player2.colliderect(ball):
         ballXconstant *= -1
+        ballYconstant *= choice(yList)
 
     pygame.display.flip()
