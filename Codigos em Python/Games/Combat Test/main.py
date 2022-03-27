@@ -21,6 +21,7 @@ class Warrior(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.isAnimating = False
+        self.isVunerable = True
         self.combatList = list()
         self.currentIndex = 0
         for i in range(6):
@@ -125,7 +126,8 @@ while True:
     if pygame.sprite.collide_mask(warrior,wizard) and warrior.isAnimating:
         spriteGroup.remove(wizard)
     
-    if spell.rect.x > SCREEN_WIDTH or pygame.sprite.collide_mask(spell, warrior):
+    if spell.rect.x > SCREEN_WIDTH or (pygame.sprite.collide_mask(spell, warrior) and warrior.isVunerable == True):
+        warrior.isVunerable = False
         spriteGroup.remove(warrior)
         wizard.canThrowPower = False
         spell.rect.x = wizard.rect.x + 100
